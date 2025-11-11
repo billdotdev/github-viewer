@@ -30,9 +30,9 @@ const getPullRequestBodyQueryOptions = (
 				owner,
 				name: repo,
 				number: prNumber,
-			})
+			});
 		},
-	}
+	};
 };
 
 const getPullRequestCommentsQueryOptions = (
@@ -51,12 +51,12 @@ const getPullRequestCommentsQueryOptions = (
 				owner,
 				name: repo,
 				number: prNumber,
-			})
+			});
 		},
-	}
+	};
 };
 
-export const Route = createFileRoute("/$owner/$repo/$number/")({
+export const Route = createFileRoute("/$owner/$repo/pr/$number/")({
 	component: PullRequestConversation,
 	loader: async ({ params, context: { queryClient } }) => {
 		const prNumber = Number.parseInt(params.number, 10);
@@ -68,7 +68,7 @@ export const Route = createFileRoute("/$owner/$repo/$number/")({
 			queryClient.ensureQueryData(
 				getPullRequestCommentsQueryOptions(params.owner, params.repo, prNumber),
 			),
-		])
+		]);
 	},
 });
 
@@ -135,7 +135,7 @@ function PullRequestConversation() {
 
 	const { data: prData } = useQuery(
 		getPullRequestBodyQueryOptions(owner, repo, prNumber),
-	)
+	);
 
 	const {
 		data: commentsData,
@@ -163,7 +163,7 @@ function PullRequestConversation() {
 		...reviews.map((r) => ({ ...r, type: "review" as const })),
 	].sort(
 		(a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
-	)
+	);
 
 	return (
 		<div className={cn("space-y-3 mx-auto w-full max-w-5xl pt-3")}>
@@ -306,5 +306,5 @@ function PullRequestConversation() {
 				))
 			)}
 		</div>
-	)
+	);
 }

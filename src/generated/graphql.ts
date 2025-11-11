@@ -36657,6 +36657,25 @@ export type WorkflowsParametersInput = {
   workflows: Array<WorkflowFileReferenceInput>;
 };
 
+export type SearchRepositoriesQueryVariables = Exact<{
+  query: Scalars['String']['input'];
+}>;
+
+
+export type SearchRepositoriesQuery = { __typename?: 'Query', search: { __typename?: 'SearchResultItemConnection', nodes?: Array<
+      | { __typename?: 'App' }
+      | { __typename?: 'Discussion' }
+      | { __typename?: 'Issue' }
+      | { __typename?: 'MarketplaceListing' }
+      | { __typename?: 'Organization' }
+      | { __typename?: 'PullRequest' }
+      | { __typename?: 'Repository', id: string, name: string, description?: string | null, stargazerCount: number, forkCount: number, visibility: RepositoryVisibility, updatedAt: any, url: any, owner:
+          | { __typename?: 'Organization', login: string }
+          | { __typename?: 'User', login: string }
+        , primaryLanguage?: { __typename?: 'Language', name: string, color?: string | null } | null, repositoryTopics: { __typename?: 'RepositoryTopicConnection', nodes?: Array<{ __typename?: 'RepositoryTopic', topic: { __typename?: 'Topic', name: string } } | null> | null } }
+      | { __typename?: 'User' }
+     | null> | null } };
+
 export type MarkFileAsViewedMutationVariables = Exact<{
   pullRequestId: Scalars['ID']['input'];
   path: Scalars['String']['input'];
@@ -36673,19 +36692,32 @@ export type UnmarkFileAsViewedMutationVariables = Exact<{
 
 export type UnmarkFileAsViewedMutation = { __typename?: 'Mutation', unmarkFileAsViewed?: { __typename?: 'UnmarkFileAsViewedPayload', clientMutationId?: string | null } | null };
 
-export type GetPullRequestsQueryVariables = Exact<{
+export type GetRepositoryCodeQueryVariables = Exact<{
   owner: Scalars['String']['input'];
   name: Scalars['String']['input'];
 }>;
 
 
-export type GetPullRequestsQuery = { __typename?: 'Query', repository?: { __typename?: 'Repository', pullRequests: { __typename?: 'PullRequestConnection', nodes?: Array<{ __typename?: 'PullRequest', number: number, title: string, createdAt: any, author?:
-          | { __typename?: 'Bot', login: string }
-          | { __typename?: 'EnterpriseUserAccount', login: string }
-          | { __typename?: 'Mannequin', login: string }
-          | { __typename?: 'Organization', login: string }
-          | { __typename?: 'User', login: string }
-         | null } | null> | null } } | null };
+export type GetRepositoryCodeQuery = { __typename?: 'Query', repository?: { __typename?: 'Repository', defaultBranchRef?: { __typename?: 'Ref', name: string, target?:
+        | { __typename?: 'Blob' }
+        | { __typename?: 'Commit', history: { __typename?: 'CommitHistoryConnection', totalCount: number, nodes?: Array<{ __typename?: 'Commit', oid: any, messageHeadline: string, message: string, committedDate: any, author?: { __typename?: 'GitActor', name?: string | null, email?: string | null, avatarUrl: any, user?: { __typename?: 'User', login: string } | null } | null } | null> | null } }
+        | { __typename?: 'Tag' }
+        | { __typename?: 'Tree' }
+       | null } | null } | null };
+
+export type GetIssuesQueryVariables = Exact<{
+  owner: Scalars['String']['input'];
+  name: Scalars['String']['input'];
+}>;
+
+
+export type GetIssuesQuery = { __typename?: 'Query', repository?: { __typename?: 'Repository', issues: { __typename?: 'IssueConnection', totalCount: number, nodes?: Array<{ __typename?: 'Issue', number: number, title: string, state: IssueState, createdAt: any, author?:
+          | { __typename?: 'Bot', login: string, avatarUrl: any }
+          | { __typename?: 'EnterpriseUserAccount', login: string, avatarUrl: any }
+          | { __typename?: 'Mannequin', login: string, avatarUrl: any }
+          | { __typename?: 'Organization', login: string, avatarUrl: any }
+          | { __typename?: 'User', login: string, avatarUrl: any }
+         | null, comments: { __typename?: 'IssueCommentConnection', totalCount: number }, labels?: { __typename?: 'LabelConnection', nodes?: Array<{ __typename?: 'Label', name: string, color: string } | null> | null } | null } | null> | null } } | null };
 
 export type GetPullRequestCommitsQueryVariables = Exact<{
   owner: Scalars['String']['input'];
@@ -36756,3 +36788,41 @@ export type GetPullRequestQuery = { __typename?: 'Query', repository?: { __typen
         | { __typename?: 'Organization', login: string, avatarUrl: any }
         | { __typename?: 'User', login: string, avatarUrl: any }
        | null, comments: { __typename?: 'IssueCommentConnection', totalCount: number }, reviews?: { __typename?: 'PullRequestReviewConnection', totalCount: number } | null, commits: { __typename?: 'PullRequestCommitConnection', totalCount: number } } | null } | null };
+
+export type GetPullRequestsQueryVariables = Exact<{
+  owner: Scalars['String']['input'];
+  name: Scalars['String']['input'];
+  states?: InputMaybe<Array<PullRequestState> | PullRequestState>;
+  first: Scalars['Int']['input'];
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+}>;
+
+
+export type GetPullRequestsQuery = { __typename?: 'Query', repository?: { __typename?: 'Repository', pullRequests: { __typename?: 'PullRequestConnection', totalCount: number, pageInfo: { __typename?: 'PageInfo', hasNextPage: boolean, hasPreviousPage: boolean, endCursor?: string | null, startCursor?: string | null }, nodes?: Array<{ __typename?: 'PullRequest', number: number, title: string, state: PullRequestState, isDraft: boolean, createdAt: any, author?:
+          | { __typename?: 'Bot', login: string, avatarUrl: any }
+          | { __typename?: 'EnterpriseUserAccount', login: string, avatarUrl: any }
+          | { __typename?: 'Mannequin', login: string, avatarUrl: any }
+          | { __typename?: 'Organization', login: string, avatarUrl: any }
+          | { __typename?: 'User', login: string, avatarUrl: any }
+         | null, comments: { __typename?: 'IssueCommentConnection', totalCount: number }, labels?: { __typename?: 'LabelConnection', nodes?: Array<{ __typename?: 'Label', id: string, name: string, color: string } | null> | null } | null } | null> | null } } | null };
+
+export type GetPrStateCountsQueryVariables = Exact<{
+  owner: Scalars['String']['input'];
+  name: Scalars['String']['input'];
+}>;
+
+
+export type GetPrStateCountsQuery = { __typename?: 'Query', repository?: { __typename?: 'Repository', open: { __typename?: 'PullRequestConnection', totalCount: number }, openPRsForDraftCount: { __typename?: 'PullRequestConnection', nodes?: Array<{ __typename?: 'PullRequest', isDraft: boolean } | null> | null }, closed: { __typename?: 'PullRequestConnection', totalCount: number }, merged: { __typename?: 'PullRequestConnection', totalCount: number } } | null };
+
+export type GetRepositoryQueryVariables = Exact<{
+  owner: Scalars['String']['input'];
+  name: Scalars['String']['input'];
+}>;
+
+
+export type GetRepositoryQuery = { __typename?: 'Query', repository?: { __typename?: 'Repository', id: string, name: string, description?: string | null, stargazerCount: number, forkCount: number, visibility: RepositoryVisibility, owner:
+      | { __typename?: 'Organization', login: string }
+      | { __typename?: 'User', login: string }
+    , primaryLanguage?: { __typename?: 'Language', name: string, color?: string | null } | null, repositoryTopics: { __typename?: 'RepositoryTopicConnection', nodes?: Array<{ __typename?: 'RepositoryTopic', topic: { __typename?: 'Topic', name: string } } | null> | null }, defaultBranchRef?: { __typename?: 'Ref', name: string } | null, pullRequests: { __typename?: 'PullRequestConnection', totalCount: number }, openIssues: { __typename?: 'IssueConnection', totalCount: number } } | null };

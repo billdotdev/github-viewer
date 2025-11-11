@@ -27,19 +27,19 @@ const getPullRequestCommitsQueryOptions = (
 				owner,
 				name: repo,
 				number: prNumber,
-			})
+			});
 		},
-	}
+	};
 };
 
-export const Route = createFileRoute("/$owner/$repo/$number/commits")({
+export const Route = createFileRoute("/$owner/$repo/pr/$number/commits")({
 	component: PullRequestCommits,
 	loader: async ({ params, context: { queryClient } }) => {
 		const prNumber = Number.parseInt(params.number, 10);
 
 		await queryClient.ensureQueryData(
 			getPullRequestCommitsQueryOptions(params.owner, params.repo, prNumber),
-		)
+		);
 	},
 });
 
@@ -191,9 +191,9 @@ function PullRequestCommits() {
 								</div>
 							</CardContent>
 						</Card>
-					)
+					);
 				})
 			)}
 		</div>
-	)
+	);
 }

@@ -38,24 +38,24 @@ const getPullRequestFilesQueryOptions = (
 				name: repo,
 				number: prNumber,
 				after: pageParam,
-			})
+			});
 		},
 		initialPageParam: undefined as string | undefined,
 		getNextPageParam: (lastPage: GetPullRequestFilesQuery) => {
 			const pageInfo = lastPage.repository?.pullRequest?.files?.pageInfo;
 			return pageInfo?.hasNextPage ? pageInfo.endCursor : undefined;
 		},
-	}
+	};
 };
 
-export const Route = createFileRoute("/$owner/$repo/$number/files")({
+export const Route = createFileRoute("/$owner/$repo/pr/$number/files")({
 	component: PullRequestFiles,
 	loader: async ({ params, context: { queryClient } }) => {
 		const prNumber = Number.parseInt(params.number, 10);
 
 		await queryClient.ensureInfiniteQueryData(
 			getPullRequestFilesQueryOptions(params.owner, params.repo, prNumber),
-		)
+		);
 	},
 });
 
@@ -96,7 +96,7 @@ function PullRequestFiles() {
 		searchText: "",
 		changeTypes: new Set(),
 		extensions: new Set(),
-	})
+	});
 	const scrollContainerRef = useRef<HTMLDivElement>(null);
 
 	const {
@@ -114,7 +114,7 @@ function PullRequestFiles() {
 			(page) =>
 				page.repository?.pullRequest?.files?.nodes?.filter((f) => f !== null) ||
 				[],
-		)
+		);
 	}, [filesData]);
 
 	const filteredFiles = useMemo(() => {
@@ -136,12 +136,12 @@ function PullRequestFiles() {
 			if (filters.extensions.size > 0) {
 				const ext = getFileExtension(file.path);
 				if (!filters.extensions.has(ext)) {
-					return false
+					return false;
 				}
 			}
 
 			return true;
-		})
+		});
 	}, [allFiles, filters]);
 
 	const availableExtensions = useMemo(() => {
@@ -192,42 +192,42 @@ function PullRequestFiles() {
 			const pageFiles =
 				page.repository?.pullRequest?.files?.nodes?.filter(
 					(f) => f !== null && f.viewerViewedState === "VIEWED",
-				) || []
+				) || [];
 			return count + pageFiles.length;
-		}, 0)
+		}, 0);
 	}, [filesData]);
 
 	const findNextUnviewedFile = (startIndex: number): number => {
 		for (let i = startIndex + 1; i < filteredFiles.length; i++) {
 			if (filteredFiles[i].viewerViewedState !== "VIEWED") {
-				return i
+				return i;
 			}
 		}
 		return startIndex < filteredFiles.length - 1 ? startIndex + 1 : startIndex;
-	}
+	};
 
 	const findPreviousUnviewedFile = (startIndex: number): number => {
 		for (let i = startIndex - 1; i >= 0; i--) {
 			if (filteredFiles[i].viewerViewedState !== "VIEWED") {
-				return i
+				return i;
 			}
 		}
 		return startIndex > 0 ? startIndex - 1 : startIndex;
-	}
+	};
 
 	const handleNext = () => {
 		if (activeFileIndex < filteredFiles.length - 1) {
 			const nextIndex = findNextUnviewedFile(activeFileIndex);
 			setActiveFileIndex(nextIndex);
 		}
-	}
+	};
 
 	const handlePrevious = () => {
 		if (activeFileIndex > 0) {
 			const prevIndex = findPreviousUnviewedFile(activeFileIndex);
 			setActiveFileIndex(prevIndex);
 		}
-	}
+	};
 
 	const handleFileViewedChange = (fileIndex: number) => {
 		if (fileIndex === activeFileIndex) {
@@ -236,24 +236,24 @@ function PullRequestFiles() {
 				setActiveFileIndex(nextIndex);
 			}
 		}
-	}
+	};
 
 	const handleToggleViewed = () => {
 		const currentFile = filteredFiles[activeFileIndex];
 		if (currentFile) {
 			toggleViewed(currentFile.path, currentFile.viewerViewedState);
 		}
-	}
+	};
 
 	const handleToggleExpand = () => {
 		const fileElement = document.getElementById(
 			`file-${filteredFiles[activeFileIndex]?.path}`,
-		)
+		);
 		if (fileElement) {
 			const button = fileElement.querySelector("button");
 			button?.click();
 		}
-	}
+	};
 
 	const handleFileSelectFromTree = (path: string) => {
 		const index = filteredFiles.findIndex((f) => f.path === path);
@@ -264,14 +264,14 @@ function PullRequestFiles() {
 				fileElement.scrollIntoView({ behavior: "smooth", block: "center" });
 			}
 		}
-	}
+	};
 
 	useKeyboardShortcuts({
 		onNext: handleNext,
 		onPrevious: handlePrevious,
 		onToggleViewed: handleToggleViewed,
 		onToggleExpand: handleToggleExpand,
-	})
+	});
 
 	useEffect(() => {
 		const scrollContainer = scrollContainerRef.current;
@@ -288,7 +288,7 @@ function PullRequestFiles() {
 			) {
 				fetchNextPage();
 			}
-		}
+		};
 
 		scrollContainer.addEventListener("scroll", handleScroll);
 		return () => scrollContainer.removeEventListener("scroll", handleScroll);
@@ -299,14 +299,14 @@ function PullRequestFiles() {
 			.filter((f) => f.viewerViewedState !== "VIEWED")
 			.map((f) => f.path);
 		markAllAsViewed(unviewedPaths);
-	}
+	};
 
 	const handleMarkAllAsUnviewed = () => {
 		const viewedPaths = allFiles
 			.filter((f) => f.viewerViewedState === "VIEWED")
 			.map((f) => f.path);
 		markAllAsUnviewed(viewedPaths);
-	}
+	};
 
 	if (isFilesLoading) {
 		return (
@@ -326,7 +326,7 @@ function PullRequestFiles() {
 					</div>
 				</CardContent>
 			</Card>
-		)
+		);
 	}
 
 	if (filesError) {
@@ -336,7 +336,7 @@ function PullRequestFiles() {
 					<p className={cn("text-sm text-destructive")}>Failed to load files</p>
 				</CardContent>
 			</Card>
-		)
+		);
 	}
 
 	if (allFiles.length === 0) {
@@ -351,7 +351,7 @@ function PullRequestFiles() {
 					<p className={cn("text-muted-foreground")}>No files changed</p>
 				</CardContent>
 			</Card>
-		)
+		);
 	}
 
 	return (
@@ -443,5 +443,5 @@ function PullRequestFiles() {
 				</div>
 			</div>
 		</div>
-	)
+	);
 }

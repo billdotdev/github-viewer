@@ -1,65 +1,26 @@
-import { useQuery } from "@tanstack/react-query";
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { gql } from "graphql-request";
+import { createFileRoute } from "@tanstack/react-router";
+import { BookOpen } from "lucide-react";
 import { useEffect, useState } from "react";
+import { RepositoryCard } from "@/components/RepositoryCard";
+import { RepositorySearch } from "@/components/RepositorySearch";
+import { TokenPrompt } from "@/components/TokenPrompt";
 import {
 	Breadcrumb,
 	BreadcrumbItem,
 	BreadcrumbList,
 	BreadcrumbPage,
 } from "@/components/ui/breadcrumb";
-import { getGraphQLClient } from "@/lib/graphqlClient";
+import { getPinnedRepos } from "@/lib/repositoryStorage";
 import { getToken } from "@/lib/tokenStorage";
 import { cn } from "@/lib/utils";
-import { TokenPrompt } from "../components/TokenPrompt";
-import type {
-	GetPullRequestsQuery,
-	GetPullRequestsQueryVariables,
-} from "../generated/graphql";
-
-const getPullRequestsQueryOptions = (owner: string, repo: string) => {
-	const graphQLClient = getGraphQLClient();
-	return {
-		queryKey: ["pullRequests", owner, repo],
-		queryFn: async () => {
-			return graphQLClient.request<
-				GetPullRequestsQuery,
-				GetPullRequestsQueryVariables
-			>(GET_PULL_REQUESTS, {
-				owner,
-				name: repo,
-			});
-		},
-	};
-};
 
 export const Route = createFileRoute("/")({
 	component: App,
 });
 
-const GET_PULL_REQUESTS = gql`
-  query GetPullRequests($owner: String!, $name: String!) {
-    repository(owner: $owner, name: $name) {
-      pullRequests(
-        first: 50
-        states: OPEN
-        orderBy: { field: CREATED_AT, direction: DESC }
-      ) {
-        nodes {
-          number
-          title
-          createdAt
-          author {
-			login
-          }
-        }
-      }
-    }
-  }
-`;
-
 function App() {
 	const [hasToken, setHasToken] = useState<boolean | null>(null);
+	const [pinnedRepos, setPinnedRepos] = useState(getPinnedRepos());
 
 	useEffect(() => {
 		getToken().then((token) => {
@@ -67,10 +28,9 @@ function App() {
 		});
 	}, []);
 
-	const { data } = useQuery({
-		...getPullRequestsQueryOptions("simbuka", "applications"),
-		enabled: hasToken === true,
-	});
+	const handleRepositoryChange = () => {
+		setPinnedRepos(getPinnedRepos());
+	};
 
 	if (hasToken === null) {
 		return null;
@@ -84,36 +44,10 @@ function App() {
 		);
 	}
 
-	const pullRequests =
-		data?.repository?.pullRequests.nodes?.filter((pr) => pr !== null) || [];
-
-	if (pullRequests.length === 0) {
-		return (
-			<>
-				<header
-					className={cn("flex h-12 shrink-0 items-center gap-2 border-b px-4")}
-				>
-					<Breadcrumb>
-						<BreadcrumbList>
-							<BreadcrumbItem>
-								<BreadcrumbPage className={cn("flex items-center gap-1")}>
-									<span>Home</span>
-								</BreadcrumbPage>
-							</BreadcrumbItem>
-						</BreadcrumbList>
-					</Breadcrumb>
-				</header>
-				<div className={cn("flex flex-1 items-center justify-center p-4")}>
-					<p className={cn("text-muted-foreground")}>No pull requests found</p>
-				</div>
-			</>
-		);
-	}
-
 	return (
 		<>
 			<header
-				className={cn("flex h-12 shrink-0 items-center gap-2 border-b px-4")}
+				className={cn("flex h-6 shrink-0 items-center gap-2 border-b px-4")}
 			>
 				<Breadcrumb>
 					<BreadcrumbList>
@@ -126,55 +60,51 @@ function App() {
 				</Breadcrumb>
 			</header>
 			<div className={cn("flex flex-1 flex-col overflow-auto")}>
-				<div className={cn("container mx-auto max-w-4xl py-6")}>
-					<div className={cn("rounded-md border")}>
-						<ul className={cn("divide-y")}>
-							{pullRequests.map((pr) => (
-								<li key={pr.number}>
-									<Link
-										to="/$owner/$repo/$number"
-										params={{
-											owner: "simbuka",
-											repo: "applications",
-											number: pr.number.toString(),
-										}}
-										className={cn(
-											"block transition-colors hover:bg-accent/50 focus:bg-accent/50",
-										)}
-									>
-										<div className={cn("px-4 py-3")}>
-											<div className={cn("flex items-start gap-1")}>
-												<div className={cn("min-w-0 flex-1")}>
-													<div
-														className={cn("truncate font-medium leading-tight")}
-													>
-														{pr.title}
-													</div>
-													<div
-														className={cn(
-															"mt-1 flex flex-wrap items-center gap-x-1 gap-y-1 text-xs text-muted-foreground",
-														)}
-													>
-														<span
-															className={cn("flex min-w-0 items-center gap-1")}
-														>
-															{pr.author?.login}
-														</span>
-														<span>•</span>
-														<span className={cn("flex items-center gap-1")}>
-															{new Date(pr.createdAt).toLocaleString()}
-														</span>
-														<span>•</span>
-														<span>#{pr.number}</span>
-													</div>
-												</div>
-											</div>
-										</div>
-									</Link>
-								</li>
-							))}
-						</ul>
+				<div className={cn("container mx-auto max-w-6xl py-8 px-4")}>
+					<div className={cn("mb-8")}>
+						<h1 className={cn("text-3xl font-bold mb-2")}>Repositories</h1>
+						<p className={cn("text-muted-foreground")}>
+							Search and pin repositories to keep track of your work
+						</p>
 					</div>
+
+					<div className={cn("mb-8")}>
+						<RepositorySearch onRepositoryPinned={handleRepositoryChange} />
+					</div>
+
+					{pinnedRepos.length === 0 ? (
+						<div
+							className={cn(
+								"flex flex-col items-center justify-center py-16 text-center",
+							)}
+						>
+							<div className={cn("mb-4 rounded-full bg-muted p-4")}>
+								<BookOpen className={cn("h-8 w-8 text-muted-foreground")} />
+							</div>
+							<h3 className={cn("text-lg font-semibold mb-2")}>
+								No pinned repositories
+							</h3>
+							<p className={cn("text-muted-foreground max-w-md")}>
+								Search for repositories above and pin them to quickly access
+								them here
+							</p>
+						</div>
+					) : (
+						<div>
+							<h2 className={cn("text-xl font-semibold mb-4")}>
+								Pinned Repositories
+							</h2>
+							<div className={cn("grid gap-4 md:grid-cols-2")}>
+								{pinnedRepos.map((repo) => (
+									<RepositoryCard
+										key={`${repo.owner}/${repo.name}`}
+										repository={repo}
+										onUnpin={handleRepositoryChange}
+									/>
+								))}
+							</div>
+						</div>
+					)}
 				</div>
 			</div>
 		</>

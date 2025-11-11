@@ -16,15 +16,11 @@ import {
 	MessageSquare,
 	XCircle,
 } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
 import {
-	Breadcrumb,
-	BreadcrumbItem,
-	BreadcrumbLink,
-	BreadcrumbList,
-	BreadcrumbPage,
-	BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
+	type BreadcrumbItemData,
+	RepositoryBreadcrumbs,
+} from "@/components/RepositoryBreadcrumbs";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import type {
 	GetPullRequestQuery,
@@ -54,7 +50,7 @@ const getPullRequestQueryOptions = (
 	};
 };
 
-export const Route = createFileRoute("/$owner/$repo/$number")({
+export const Route = createFileRoute("/$owner/$repo/pr/$number")({
 	component: PullRequestLayout,
 	loader: async ({ params, context: { queryClient } }) => {
 		const prNumber = Number.parseInt(params.number, 10);
@@ -107,6 +103,12 @@ function PullRequestLayout() {
 	const isFilesActive = pathname.endsWith("/files");
 	const isConversationActive = !isCommitsActive && !isFilesActive;
 
+	const subPage = isCommitsActive
+		? "commits"
+		: isFilesActive
+			? "files"
+			: undefined;
+
 	const { data: prData } = useQuery(
 		getPullRequestQueryOptions(owner, repo, prNumber),
 	);
@@ -141,71 +143,43 @@ function PullRequestLayout() {
 	const commentsCount =
 		(pr.comments.totalCount || 0) + (pr.reviews?.totalCount || 0);
 
+	const breadcrumbItems: BreadcrumbItemData[] = [
+		{ label: "Home", to: "/" },
+		{
+			label: `${owner}/${repo}`,
+			to: "/$owner/$repo",
+			params: { owner, repo },
+			className: cn("max-w-[200px] truncate font-mono text-xs"),
+		},
+		{
+			label: "Pull Requests",
+			to: "/$owner/$repo/pulls",
+			params: { owner, repo },
+			className: cn("text-xs"),
+		},
+		{
+			label: `#${pr.number}`,
+			to: "/$owner/$repo/pr/$number",
+			params: { owner, repo, number },
+			className: cn("font-mono text-xs"),
+		},
+	];
+
+	if (subPage === "commits") {
+		breadcrumbItems.push({
+			label: "Commits",
+			icon: GitCommit,
+		});
+	} else if (subPage === "files") {
+		breadcrumbItems.push({
+			label: "Files",
+			icon: FileDiff,
+		});
+	}
+
 	return (
 		<>
-			<header
-				className={cn(
-					"sticky top-0 z-20 flex h-12 shrink-0 items-center gap-2 border-b bg-background px-4",
-				)}
-			>
-				<Breadcrumb>
-					<BreadcrumbList>
-						<BreadcrumbItem>
-							<BreadcrumbLink asChild>
-								<Link to="/" className={cn("flex items-center gap-1")}>
-									<span>Home</span>
-								</Link>
-							</BreadcrumbLink>
-						</BreadcrumbItem>
-						<BreadcrumbSeparator />
-						<BreadcrumbItem>
-							<BreadcrumbPage
-								className={cn("max-w-[200px] truncate font-mono text-xs")}
-							>
-								{owner}/{repo}
-							</BreadcrumbPage>
-						</BreadcrumbItem>
-						<BreadcrumbSeparator />
-						<BreadcrumbItem>
-							{isConversationActive ? (
-								<BreadcrumbPage className={cn("font-mono text-xs")}>
-									{pr.title}
-								</BreadcrumbPage>
-							) : (
-								<BreadcrumbLink asChild>
-									<Link
-										to="/$owner/$repo/$number"
-										params={{ owner, repo, number }}
-										className={cn("font-mono text-xs")}
-									>
-										{pr.title}
-									</Link>
-								</BreadcrumbLink>
-							)}
-						</BreadcrumbItem>
-						{(isCommitsActive || isFilesActive) && (
-							<>
-								<BreadcrumbSeparator />
-								<BreadcrumbItem>
-									<BreadcrumbPage className={cn("flex items-center gap-1")}>
-										{isCommitsActive ? (
-											<>
-												<GitCommit className={cn("h-3.5 w-3.5")} />
-												<span>Commits</span>
-											</>
-										) : (
-											<>
-												<FileDiff className={cn("h-3.5 w-3.5")} />
-												<span>Files</span>
-											</>
-										)}
-									</BreadcrumbPage>
-								</BreadcrumbItem>
-							</>
-						)}
-					</BreadcrumbList>
-				</Breadcrumb>
-			</header>
+			<RepositoryBreadcrumbs items={breadcrumbItems} />
 			<div className={cn("flex flex-1 flex-col overflow-hidden")}>
 				<div className={cn("bg-card shrink-0 w-full")}>
 					<div className={cn("max-w-5xl mx-auto px-4 py-3")}>
@@ -305,7 +279,7 @@ function PullRequestLayout() {
 								)}
 							>
 								<Link
-									to="/$owner/$repo/$number"
+									to="/$owner/$repo/pr/$number"
 									params={{ owner, repo, number }}
 								>
 									<MessageSquare className={cn("h-4 w-4")} />
@@ -325,7 +299,7 @@ function PullRequestLayout() {
 								)}
 							>
 								<Link
-									to="/$owner/$repo/$number/commits"
+									to="/$owner/$repo/pr/$number/commits"
 									params={{ owner, repo, number }}
 								>
 									<GitCommit className={cn("h-4 w-4")} />
@@ -345,7 +319,7 @@ function PullRequestLayout() {
 								)}
 							>
 								<Link
-									to="/$owner/$repo/$number/files"
+									to="/$owner/$repo/pr/$number/files"
 									params={{ owner, repo, number }}
 								>
 									<FileDiff className={cn("h-4 w-4")} />
