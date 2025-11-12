@@ -2,38 +2,14 @@ import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { gql } from "graphql-request";
 import { CircleDot, MessageSquare } from "lucide-react";
+import { createCrumb } from "@/components/Breadcrumbs";
 import { Badge } from "@/components/ui/badge";
+import type {
+	GetIssuesQuery,
+	GetIssuesQueryVariables,
+} from "@/generated/graphql";
 import { getGraphQLClient } from "@/lib/graphqlClient";
 import { cn } from "@/lib/utils";
-
-interface Issue {
-	number: number;
-	title: string;
-	state: string;
-	createdAt: string;
-	author: {
-		login: string;
-		avatarUrl: string;
-	} | null;
-	comments: {
-		totalCount: number;
-	};
-	labels: {
-		nodes: Array<{
-			name: string;
-			color: string;
-		}>;
-	};
-}
-
-interface RepositoryIssuesData {
-	repository: {
-		issues: {
-			nodes: Issue[];
-			totalCount: number;
-		};
-	};
-}
 
 const GET_ISSUES = gql`
 	query GetIssues($owner: String!, $name: String!) {
@@ -73,10 +49,13 @@ const getIssuesQueryOptions = (owner: string, repo: string) => {
 	return {
 		queryKey: ["repositoryIssues", owner, repo],
 		queryFn: async () => {
-			return graphQLClient.request<RepositoryIssuesData>(GET_ISSUES, {
-				owner,
-				name: repo,
-			});
+			return graphQLClient.request<GetIssuesQuery, GetIssuesQueryVariables>(
+				GET_ISSUES,
+				{
+					owner,
+					name: repo,
+				},
+			);
 		},
 	};
 };
@@ -87,6 +66,15 @@ export const Route = createFileRoute("/$owner/$repo/issues")({
 		await queryClient.ensureQueryData(
 			getIssuesQueryOptions(params.owner, params.repo),
 		);
+
+		return {
+			crumbs: [
+				createCrumb({
+					label: "Issues",
+					icon: CircleDot,
+				}),
+			],
+		};
 	},
 });
 
@@ -155,78 +143,89 @@ function RepositoryIssuesTab() {
 			<div className={cn("max-w-6xl mx-auto px-4 py-6")}>
 				<div className={cn("rounded-md border bg-card")}>
 					<ul className={cn("divide-y")}>
-						{issues.map((issue) => (
-							<li key={issue.number}>
-								<a
-									href={`https://github.com/${owner}/${repo}/issues/${issue.number}`}
-									target="_blank"
-									rel="noopener noreferrer"
-									className={cn(
-										"block transition-colors hover:bg-accent/50 focus:bg-accent/50",
-									)}
-								>
-									<div className={cn("px-4 py-4")}>
-										<div className={cn("flex items-start gap-3")}>
-											<div className={cn("pt-0.5")}>
-												<CircleDot className={cn("w-5 h-5 text-green-600")} />
-											</div>
-											{issue.author && (
-												<img
-													src={issue.author.avatarUrl}
-													alt={issue.author.login}
-													className={cn("h-10 w-10 rounded-full")}
-												/>
-											)}
-											<div className={cn("min-w-0 flex-1")}>
-												<div className={cn("font-semibold leading-tight mb-1")}>
-													{issue.title}
+						{issues.map((issue) => {
+							if (!issue) return null;
+							return (
+								<li key={issue.number}>
+									<a
+										href={`https://github.com/${owner}/${repo}/issues/${issue.number}`}
+										target="_blank"
+										rel="noopener noreferrer"
+										className={cn(
+											"block transition-colors hover:bg-accent/50 focus:bg-accent/50",
+										)}
+									>
+										<div className={cn("px-4 py-4")}>
+											<div className={cn("flex items-start gap-3")}>
+												<div className={cn("pt-0.5")}>
+													<CircleDot className={cn("w-5 h-5 text-green-600")} />
 												</div>
-												<div
-													className={cn(
-														"flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-muted-foreground mb-2",
-													)}
-												>
-													<span>#{issue.number}</span>
-													<span>•</span>
-													<span>opened {formatDate(issue.createdAt)}</span>
-													{issue.author && (
-														<>
-															<span>•</span>
-															<span>by {issue.author.login}</span>
-														</>
-													)}
-													{issue.comments.totalCount > 0 && (
-														<>
-															<span>•</span>
-															<span className={cn("flex items-center gap-1")}>
-																<MessageSquare className={cn("h-3 w-3")} />
-																{issue.comments.totalCount}
-															</span>
-														</>
-													)}
-												</div>
-												{issue.labels.nodes.length > 0 && (
-													<div className={cn("flex flex-wrap gap-1.5")}>
-														{issue.labels.nodes.map((label) => (
-															<Badge
-																key={label.name}
-																style={{
-																	backgroundColor: `#${label.color}`,
-																	color: getContrastColor(`#${label.color}`),
-																}}
-																className={cn("text-xs font-normal")}
-															>
-																{label.name}
-															</Badge>
-														))}
-													</div>
+												{issue.author && (
+													<img
+														src={issue.author.avatarUrl}
+														alt={issue.author.login}
+														className={cn("h-10 w-10 rounded-full")}
+													/>
 												)}
+												<div className={cn("min-w-0 flex-1")}>
+													<div
+														className={cn("font-semibold leading-tight mb-1")}
+													>
+														{issue.title}
+													</div>
+													<div
+														className={cn(
+															"flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-muted-foreground mb-2",
+														)}
+													>
+														<span>#{issue.number}</span>
+														<span>•</span>
+														<span>opened {formatDate(issue.createdAt)}</span>
+														{issue.author && (
+															<>
+																<span>•</span>
+																<span>by {issue.author.login}</span>
+															</>
+														)}
+														{issue.comments.totalCount > 0 && (
+															<>
+																<span>•</span>
+																<span className={cn("flex items-center gap-1")}>
+																	<MessageSquare className={cn("h-3 w-3")} />
+																	{issue.comments.totalCount}
+																</span>
+															</>
+														)}
+													</div>
+													{issue.labels?.nodes &&
+														issue.labels.nodes.length > 0 && (
+															<div className={cn("flex flex-wrap gap-1.5")}>
+																{issue.labels.nodes.map((label) => {
+																	if (!label) return null;
+																	return (
+																		<Badge
+																			key={label.name}
+																			style={{
+																				backgroundColor: `#${label.color}`,
+																				color: getContrastColor(
+																					`#${label.color}`,
+																				),
+																			}}
+																			className={cn("text-xs font-normal")}
+																		>
+																			{label?.name}
+																		</Badge>
+																	);
+																})}
+															</div>
+														)}
+												</div>
 											</div>
 										</div>
-									</div>
-								</a>
-							</li>
-						))}
+									</a>
+								</li>
+							);
+						})}
 					</ul>
 				</div>
 			</div>

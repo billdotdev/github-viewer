@@ -71,7 +71,7 @@ export function RepositoryCard({ repository, onUnpin }: RepositoryCardProps) {
 	return (
 		<Card className={cn("transition-colors hover:bg-accent/50")}>
 			<Link
-				to="/$owner/$repo"
+				to="/$owner/$repo/pulls"
 				params={{ owner, repo: name }}
 				className={cn("block")}
 			>

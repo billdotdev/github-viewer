@@ -12,6 +12,7 @@ import {
 	X,
 } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { createCrumb } from "@/components/Breadcrumbs";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -196,6 +197,18 @@ export const Route = createFileRoute("/$owner/$repo/pulls")({
 		await queryClient.ensureQueryData(
 			getPRStateCountsQueryOptions(params.owner, params.repo),
 		);
+
+		return {
+			crumbs: [
+				createCrumb({
+					label: "Pull Requests",
+					to: "/$owner/$repo/pulls",
+					params,
+					className: cn("text-xs"),
+					icon: GitPullRequest,
+				}),
+			],
+		};
 	},
 });
 

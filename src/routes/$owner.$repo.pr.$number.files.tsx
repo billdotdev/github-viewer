@@ -3,6 +3,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { gql } from "graphql-request";
 import { FileDiff } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { createCrumb } from "@/components/Breadcrumbs";
 import { FileFilter, type FileFilters } from "@/components/FileFilter";
 import { FileList } from "@/components/FileList";
 import { FileTree } from "@/components/FileTree";
@@ -56,6 +57,15 @@ export const Route = createFileRoute("/$owner/$repo/pr/$number/files")({
 		await queryClient.ensureInfiniteQueryData(
 			getPullRequestFilesQueryOptions(params.owner, params.repo, prNumber),
 		);
+
+		return {
+			crumbs: [
+				createCrumb({
+					label: "Files",
+					icon: FileDiff,
+				}),
+			],
+		};
 	},
 });
 

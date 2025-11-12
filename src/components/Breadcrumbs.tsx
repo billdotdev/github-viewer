@@ -1,4 +1,4 @@
-import { Link } from "@tanstack/react-router";
+import { isMatch, Link, useMatches } from "@tanstack/react-router";
 import type { LucideIcon } from "lucide-react";
 import { Fragment, type ReactNode } from "react";
 import {
@@ -11,19 +11,16 @@ import {
 } from "@/components/ui/breadcrumb";
 import { cn } from "@/lib/utils";
 
-export interface BreadcrumbItemData {
-	label: string;
-	to?: string;
-	params?: Record<string, string>;
-	icon?: LucideIcon;
-	className?: string;
-}
+export function Breadcrumbs() {
+	const matches = useMatches();
+	if (matches.some((match) => match.status === "pending")) return null;
 
-interface RepositoryBreadcrumbsProps {
-	items: BreadcrumbItemData[];
-}
+	const items = matches
+		.filter((match) => isMatch(match, "loaderData.crumbs"))
+		.flatMap((match) => match.loaderData?.crumbs || []);
 
-export function RepositoryBreadcrumbs({ items }: RepositoryBreadcrumbsProps) {
+	if (items.length === 0) return null;
+
 	return (
 		<header
 			className={cn(
@@ -33,12 +30,13 @@ export function RepositoryBreadcrumbs({ items }: RepositoryBreadcrumbsProps) {
 			<Breadcrumb>
 				<BreadcrumbList>
 					{items.map((item, index) => {
+						if (!item) return null;
 						const isLast = index === items.length - 1;
-						const Icon = item.icon;
+						const Icon = item && "icon" in item ? item.icon : undefined;
 
 						const content: ReactNode = Icon ? (
-							<span className={cn("flex items-center gap-1")}>
-								<Icon className={cn("h-3.5 w-3.5")} />
+							<span className={cn("flex items-center gap-1 justify-center")}>
+								<Icon className={cn("h-3 w-3 shrink-0")} />
 								<span>{item.label}</span>
 							</span>
 						) : (
@@ -72,4 +70,16 @@ export function RepositoryBreadcrumbs({ items }: RepositoryBreadcrumbsProps) {
 			</Breadcrumb>
 		</header>
 	);
+}
+
+interface BreadcrumbItemData {
+	label: string;
+	to?: string;
+	params?: Record<string, string>;
+	icon?: LucideIcon;
+	className?: string;
+}
+
+export function createCrumb(crumb: BreadcrumbItemData) {
+	return crumb;
 }

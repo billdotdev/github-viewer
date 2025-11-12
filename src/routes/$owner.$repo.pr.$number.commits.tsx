@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { gql } from "graphql-request";
 import { GitCommit } from "lucide-react";
+import { createCrumb } from "@/components/Breadcrumbs";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import type {
@@ -40,6 +41,15 @@ export const Route = createFileRoute("/$owner/$repo/pr/$number/commits")({
 		await queryClient.ensureQueryData(
 			getPullRequestCommitsQueryOptions(params.owner, params.repo, prNumber),
 		);
+
+		return {
+			crumbs: [
+				createCrumb({
+					label: "Commits",
+					icon: GitCommit,
+				}),
+			],
+		};
 	},
 });
 
