@@ -72,6 +72,7 @@ export function RepositoryCard({ repository, onUnpin }: RepositoryCardProps) {
 		<Card className="transition-colors hover:bg-accent/50">
 			<Link
 				to="/$owner/$repo/pulls"
+				preload="viewport"
 				params={{ owner, repo: name }}
 				className="block"
 			>

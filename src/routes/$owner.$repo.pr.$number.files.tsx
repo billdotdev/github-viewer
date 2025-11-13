@@ -53,7 +53,7 @@ export const Route = createFileRoute("/$owner/$repo/pr/$number/files")({
 	loader: async ({ params, context: { queryClient } }) => {
 		const prNumber = Number.parseInt(params.number, 10);
 
-		await queryClient.ensureInfiniteQueryData(
+		await queryClient.fetchInfiniteQuery(
 			getPullRequestFilesQueryOptions(params.owner, params.repo, prNumber),
 		);
 	},

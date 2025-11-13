@@ -197,7 +197,7 @@ export const Route = createFileRoute("/$owner/$repo/pulls")({
 		const { owner, repo } = params;
 
 		const [_, countsData] = await Promise.all([
-			queryClient.ensureInfiniteQueryData(
+			queryClient.fetchInfiniteQuery(
 				getInfinitePullRequestsQueryOptions(owner, repo, deps),
 			),
 			queryClient.fetchQuery(
