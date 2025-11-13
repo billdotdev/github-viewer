@@ -55,10 +55,10 @@ export function TokenPrompt() {
 	};
 
 	return (
-		<Card className={cn("w-full max-w-md mx-auto")}>
-			<CardHeader className={cn("space-y-1")}>
-				<div className={cn("flex items-center gap-2")}>
-					<Key className={cn("h-5 w-5")} />
+		<Card className="w-full max-w-md mx-auto">
+			<CardHeader className="space-y-1">
+				<div className="flex items-center gap-2">
+					<Key className="h-5 w-5" />
 					<CardTitle>GitHub Token</CardTitle>
 				</div>
 				<CardDescription>
@@ -67,7 +67,7 @@ export function TokenPrompt() {
 				</CardDescription>
 			</CardHeader>
 			<CardContent>
-				<form onSubmit={handleSubmit} className={cn("space-y-3")}>
+				<form onSubmit={handleSubmit} className="space-y-3">
 					<div>
 						<label
 							htmlFor={tokenInputId}
@@ -77,7 +77,7 @@ export function TokenPrompt() {
 						>
 							GitHub Token
 						</label>
-						<div className={cn("relative")}>
+						<div className="relative">
 							<input
 								type={showToken ? "text" : "password"}
 								id={tokenInputId}
@@ -95,13 +95,13 @@ export function TokenPrompt() {
 								size="sm"
 								onClick={() => setShowToken(!showToken)}
 								disabled={isValidating}
-								className={cn("absolute right-1 top-1/2 -translate-y-1/2 px-2")}
+								className="absolute right-1 top-1/2 -translate-y-1/2 px-2"
 								aria-label={showToken ? "Hide token" : "Show token"}
 							>
 								{showToken ? (
-									<EyeOff className={cn("h-4 w-4")} />
+									<EyeOff className="h-4 w-4" />
 								) : (
-									<Eye className={cn("h-4 w-4")} />
+									<Eye className="h-4 w-4" />
 								)}
 							</Button>
 						</div>
@@ -113,18 +113,18 @@ export function TokenPrompt() {
 								"rounded-md border border-destructive/30 bg-destructive/10 px-3 py-2",
 							)}
 						>
-							<p className={cn("text-sm text-destructive")}>{error}</p>
+							<p className="text-sm text-destructive">{error}</p>
 						</div>
 					)}
 
 					<Button
 						type="submit"
 						disabled={isValidating || !token.trim()}
-						className={cn("w-full")}
+						className="w-full"
 					>
 						{isValidating ? (
-							<span className={cn("inline-flex items-center gap-2")}>
-								<Loader2 className={cn("h-4 w-4 animate-spin")} />
+							<span className="inline-flex items-center gap-2">
+								<Loader2 className="h-4 w-4 animate-spin" />
 								Validating...
 							</span>
 						) : (
@@ -133,10 +133,8 @@ export function TokenPrompt() {
 					</Button>
 				</form>
 
-				<div className={cn("mt-4 border-t pt-4")}>
-					<h3 className={cn("mb-1 text-xs font-semibold")}>
-						How to create a token
-					</h3>
+				<div className="mt-4 border-t pt-4">
+					<h3 className="mb-1 text-xs font-semibold">How to create a token</h3>
 					<ol
 						className={cn(
 							"list-decimal list-inside space-y-0.5 text-xs text-muted-foreground",
@@ -145,8 +143,8 @@ export function TokenPrompt() {
 						<li>GitHub Settings → Developer settings</li>
 						<li>Personal access tokens → Tokens (classic)</li>
 						<li>
-							Generate with{" "}
-							<code className={cn("rounded bg-muted px-1")}>repo</code> scope
+							Generate with <code className="rounded bg-muted px-1">repo</code>{" "}
+							scope
 						</li>
 						<li>Copy and paste the token above</li>
 					</ol>

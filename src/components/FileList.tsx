@@ -1,4 +1,3 @@
-import { cn } from "@/lib/utils";
 import type { FileViewedState, PatchStatus } from "../generated/graphql";
 import { FileItem } from "./FileItem";
 
@@ -37,14 +36,14 @@ export function FileList({
 }: FileListProps) {
 	if (files.length === 0) {
 		return (
-			<div className={cn("flex min-h-[400px] items-center justify-center")}>
-				<p className={cn("text-muted-foreground")}>No files changed</p>
+			<div className="flex min-h-[400px] items-center justify-center">
+				<p className="text-muted-foreground">No files changed</p>
 			</div>
 		);
 	}
 
 	return (
-		<div className={cn("space-y-4 p-4")}>
+		<div className="space-y-4 p-4">
 			{files.map((file, index) => (
 				<FileItem
 					key={file.path}

@@ -110,8 +110,8 @@ export function FileFilter({
 	];
 
 	return (
-		<div className={cn("space-y-2 border-b p-3")}>
-			<div className={cn("relative")}>
+		<div className="space-y-2 border-b p-3">
+			<div className="relative">
 				<Search
 					className={cn(
 						"absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground",
@@ -134,18 +134,18 @@ export function FileFilter({
 							"absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground",
 						)}
 					>
-						<X className={cn("h-4 w-4")} />
+						<X className="h-4 w-4" />
 					</button>
 				)}
 			</div>
 
-			<div className={cn("flex flex-wrap gap-2")}>
-				<div className={cn("relative")} ref={changeTypesRef}>
+			<div className="flex flex-wrap gap-2">
+				<div className="relative" ref={changeTypesRef}>
 					<Button
 						variant="outline"
 						size="sm"
 						onClick={() => setShowChangeTypes(!showChangeTypes)}
-						className={cn("h-7 text-xs")}
+						className="h-7 text-xs"
 					>
 						Change Type
 						{changeTypes.size > 0 && (
@@ -164,7 +164,7 @@ export function FileFilter({
 								"absolute left-0 top-full z-10 mt-1 w-48 rounded-md border bg-popover p-2 shadow-lg",
 							)}
 						>
-							<div className={cn("space-y-2")}>
+							<div className="space-y-2">
 								{changeTypeOptions.map((option) => {
 									const count = changeTypeCounts.get(option.value) || 0;
 									return (
@@ -181,7 +181,7 @@ export function FileFilter({
 											/>
 											<label
 												htmlFor={`change-type-${option.value}`}
-												className={cn("flex-1 cursor-pointer")}
+												className="flex-1 cursor-pointer"
 											>
 												{option.label} ({count})
 											</label>
@@ -193,12 +193,12 @@ export function FileFilter({
 					)}
 				</div>
 
-				<div className={cn("relative")} ref={extensionsRef}>
+				<div className="relative" ref={extensionsRef}>
 					<Button
 						variant="outline"
 						size="sm"
 						onClick={() => setShowExtensions(!showExtensions)}
-						className={cn("h-7 text-xs")}
+						className="h-7 text-xs"
 					>
 						File Type
 						{extensions.size > 0 && (
@@ -217,7 +217,7 @@ export function FileFilter({
 								"absolute left-0 top-full z-10 mt-1 max-h-64 w-48 overflow-y-auto rounded-md border bg-popover p-2 shadow-lg",
 							)}
 						>
-							<div className={cn("space-y-2")}>
+							<div className="space-y-2">
 								{availableExtensions.map((ext) => {
 									const count = extensionCounts.get(ext) || 0;
 									return (
@@ -234,7 +234,7 @@ export function FileFilter({
 											/>
 											<label
 												htmlFor={`ext-${ext}`}
-												className={cn("flex-1 cursor-pointer font-mono")}
+												className="flex-1 cursor-pointer font-mono"
 											>
 												.{ext} ({count})
 											</label>
@@ -251,15 +251,15 @@ export function FileFilter({
 						variant="ghost"
 						size="sm"
 						onClick={clearFilters}
-						className={cn("h-7 text-xs")}
+						className="h-7 text-xs"
 					>
-						<X className={cn("mr-1 h-3 w-3")} />
+						<X className="mr-1 h-3 w-3" />
 						Clear
 					</Button>
 				)}
 			</div>
 
-			<div className={cn("text-xs text-muted-foreground")}>
+			<div className="text-xs text-muted-foreground">
 				{filteredCount === totalCount ? (
 					<span>{totalCount} files</span>
 				) : (

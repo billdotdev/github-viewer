@@ -138,12 +138,12 @@ function PullRequestLayout() {
 
 	const getStateIcon = () => {
 		if (pr.state === "MERGED") {
-			return <GitMerge className={cn("w-5 h-5")} />;
+			return <GitMerge className="w-5 h-5" />;
 		}
 		if (pr.state === "CLOSED") {
-			return <XCircle className={cn("w-5 h-5")} />;
+			return <XCircle className="w-5 h-5" />;
 		}
-		return <Circle className={cn("w-5 h-5")} />;
+		return <Circle className="w-5 h-5" />;
 	};
 
 	const getStateText = () => {
@@ -160,22 +160,20 @@ function PullRequestLayout() {
 	};
 
 	return (
-		<div className={cn("flex flex-1 flex-col overflow-hidden")}>
-			<div className={cn("bg-card shrink-0 w-full")}>
-				<div className={cn("max-w-4xl mx-auto pt-3")}>
-					<div className={cn("flex items-start gap-4")}>
-						<div className={cn("flex-1 min-w-0")}>
-							<div className={cn("mb-2 flex items-center gap-2")}>
-								<h1 className={cn("text-xl font-semibold tracking-tight")}>
+		<div className="flex flex-1 flex-col overflow-hidden">
+			<div className="bg-card shrink-0 w-full">
+				<div className="max-w-4xl mx-auto pt-3">
+					<div className="flex items-start gap-4">
+						<div className="flex-1 min-w-0">
+							<div className="mb-2 flex items-center gap-2">
+								<h1 className="text-xl font-semibold tracking-tight">
 									{pr.title}
 								</h1>
 								<Badge variant="outline">#{pr.number}</Badge>
 							</div>
 
 							<div className="flex items-center justify-between">
-								<div
-									className={cn("flex flex-wrap items-center gap-3 text-sm")}
-								>
+								<div className="flex flex-wrap items-center gap-3 text-sm">
 									<Badge
 										variant={
 											pr.state === "MERGED"
@@ -207,9 +205,7 @@ function PullRequestLayout() {
 											/>
 										)}
 										<span>
-											<span className={cn("font-medium")}>
-												{pr.author?.login}
-											</span>{" "}
+											<span className="font-medium">{pr.author?.login}</span>{" "}
 											wants to merge
 										</span>
 									</div>

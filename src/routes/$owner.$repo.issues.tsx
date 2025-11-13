@@ -114,13 +114,11 @@ function RepositoryIssuesTab() {
 
 	if (issues.length === 0) {
 		return (
-			<div className={cn("flex flex-1 items-center justify-center p-8")}>
-				<div className={cn("text-center")}>
-					<CircleDot
-						className={cn("h-12 w-12 mx-auto mb-4 text-muted-foreground")}
-					/>
-					<h3 className={cn("text-lg font-semibold mb-2")}>No open issues</h3>
-					<p className={cn("text-muted-foreground")}>
+			<div className="flex flex-1 items-center justify-center p-8">
+				<div className="text-center">
+					<CircleDot className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
+					<h3 className="text-lg font-semibold mb-2">No open issues</h3>
+					<p className="text-muted-foreground">
 						There are no open issues for this repository
 					</p>
 				</div>
@@ -129,10 +127,10 @@ function RepositoryIssuesTab() {
 	}
 
 	return (
-		<div className={cn("flex-1 overflow-auto")}>
-			<div className={cn("max-w-6xl mx-auto px-4 py-6")}>
-				<div className={cn("rounded-md border bg-card")}>
-					<ul className={cn("divide-y")}>
+		<div className="flex-1 overflow-auto">
+			<div className="max-w-6xl mx-auto px-4 py-6">
+				<div className="rounded-md border bg-card">
+					<ul className="divide-y">
 						{issues.map((issue) => {
 							if (!issue) return null;
 							return (
@@ -145,22 +143,20 @@ function RepositoryIssuesTab() {
 											"block transition-colors hover:bg-accent/50 focus:bg-accent/50",
 										)}
 									>
-										<div className={cn("px-4 py-4")}>
-											<div className={cn("flex items-start gap-3")}>
-												<div className={cn("pt-0.5")}>
-													<CircleDot className={cn("w-5 h-5 text-green-600")} />
+										<div className="px-4 py-4">
+											<div className="flex items-start gap-3">
+												<div className="pt-0.5">
+													<CircleDot className="w-5 h-5 text-green-600" />
 												</div>
 												{issue.author && (
 													<img
 														src={issue.author.avatarUrl}
 														alt={issue.author.login}
-														className={cn("h-10 w-10 rounded-full")}
+														className="h-10 w-10 rounded-full"
 													/>
 												)}
-												<div className={cn("min-w-0 flex-1")}>
-													<div
-														className={cn("font-semibold leading-tight mb-1")}
-													>
+												<div className="min-w-0 flex-1">
+													<div className="font-semibold leading-tight mb-1">
 														{issue.title}
 													</div>
 													<div
@@ -180,8 +176,8 @@ function RepositoryIssuesTab() {
 														{issue.comments.totalCount > 0 && (
 															<>
 																<span>•</span>
-																<span className={cn("flex items-center gap-1")}>
-																	<MessageSquare className={cn("h-3 w-3")} />
+																<span className="flex items-center gap-1">
+																	<MessageSquare className="h-3 w-3" />
 																	{issue.comments.totalCount}
 																</span>
 															</>
@@ -189,7 +185,7 @@ function RepositoryIssuesTab() {
 													</div>
 													{issue.labels?.nodes &&
 														issue.labels.nodes.length > 0 && (
-															<div className={cn("flex flex-wrap gap-1.5")}>
+															<div className="flex flex-wrap gap-1.5">
 																{issue.labels.nodes.map((label) => {
 																	if (!label) return null;
 																	return (
@@ -201,7 +197,7 @@ function RepositoryIssuesTab() {
 																					`#${label.color}`,
 																				),
 																			}}
-																			className={cn("text-xs font-normal")}
+																			className="text-xs font-normal"
 																		>
 																			{label?.name}
 																		</Badge>

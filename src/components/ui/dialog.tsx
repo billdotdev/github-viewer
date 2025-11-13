@@ -72,7 +72,7 @@ function DialogContent({
 						)}
 					>
 						<XIcon />
-						<span className={cn("sr-only")}>Close</span>
+						<span className="sr-only">Close</span>
 					</DialogPrimitive.Close>
 				)}
 			</DialogPrimitive.Content>

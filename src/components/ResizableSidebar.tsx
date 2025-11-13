@@ -75,15 +75,15 @@ export function ResizableSidebar({
 
 	if (isCollapsed) {
 		return (
-			<div className={cn("relative flex h-full flex-col border-r bg-card")}>
-				<div className={cn("flex items-center justify-center border-b p-2")}>
+			<div className="relative flex h-full flex-col border-r bg-card">
+				<div className="flex items-center justify-center border-b p-2">
 					<Button
 						variant="ghost"
 						size="sm"
 						onClick={toggleCollapse}
-						className={cn("h-8 w-8 p-0")}
+						className="h-8 w-8 p-0"
 					>
-						<ChevronRight className={cn("h-4 w-4")} />
+						<ChevronRight className="h-4 w-4" />
 					</Button>
 				</div>
 			</div>
@@ -93,22 +93,22 @@ export function ResizableSidebar({
 	return (
 		<div
 			ref={sidebarRef}
-			className={cn("relative flex h-full flex-col border-r bg-card")}
+			className="relative flex h-full flex-col border-r bg-card"
 			style={{ width: `${width}px`, minWidth: `${width}px` }}
 		>
-			<div className={cn("flex items-center justify-between border-b p-2")}>
-				<span className={cn("px-2 text-sm font-semibold")}>Files</span>
+			<div className="flex items-center justify-between border-b p-2">
+				<span className="px-2 text-sm font-semibold">Files</span>
 				<Button
 					variant="ghost"
 					size="sm"
 					onClick={toggleCollapse}
-					className={cn("h-8 w-8 p-0")}
+					className="h-8 w-8 p-0"
 				>
-					<ChevronLeft className={cn("h-4 w-4")} />
+					<ChevronLeft className="h-4 w-4" />
 				</Button>
 			</div>
 
-			<div className={cn("flex-1 overflow-y-auto")}>{children}</div>
+			<div className="flex-1 overflow-y-auto">{children}</div>
 
 			<button
 				type="button"

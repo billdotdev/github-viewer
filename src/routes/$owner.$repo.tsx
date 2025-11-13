@@ -115,34 +115,34 @@ function RepositoryLayout() {
 	}
 
 	return (
-		<div className={cn("flex flex-1 flex-col overflow-hidden")}>
+		<div className="flex flex-1 flex-col overflow-hidden">
 			{isCodeActive && (
-				<div className={cn("bg-card shrink-0 w-full")}>
-					<div className={cn("max-w-6xl mx-auto px-5 pt-4")}>
-						<div className={cn("flex items-start justify-between gap-4")}>
-							<div className={cn("mb-2 flex items-center gap-2 flex-wrap")}>
-								<h1 className={cn("text-xl font-semibold")}>
+				<div className="bg-card shrink-0 w-full">
+					<div className="max-w-6xl mx-auto px-5 pt-4">
+						<div className="flex items-start justify-between gap-4">
+							<div className="mb-2 flex items-center gap-2 flex-wrap">
+								<h1 className="text-xl font-semibold">
 									{owner}/{repo}
 								</h1>
 								{repository.visibility === "PRIVATE" && (
-									<Badge variant="secondary" className={cn("gap-1")}>
-										<Lock className={cn("h-3 w-3")} />
+									<Badge variant="secondary" className="gap-1">
+										<Lock className="h-3 w-3" />
 										<span>Private</span>
 									</Badge>
 								)}
 							</div>
 
-							<div className={cn("flex flex-wrap items-center gap-3 text-sm")}>
+							<div className="flex flex-wrap items-center gap-3 text-sm">
 								{repository.primaryLanguage && (
-									<div className={cn("flex items-center gap-1.5")}>
+									<div className="flex items-center gap-1.5">
 										<span
-											className={cn("h-3 w-3 rounded-full")}
+											className="h-3 w-3 rounded-full"
 											style={{
 												backgroundColor:
 													repository.primaryLanguage.color || "#ccc",
 											}}
 										/>
-										<span className={cn("text-muted-foreground")}>
+										<span className="text-muted-foreground">
 											{repository.primaryLanguage.name}
 										</span>
 									</div>
@@ -152,7 +152,7 @@ function RepositoryLayout() {
 										"flex items-center gap-1.5 text-muted-foreground",
 									)}
 								>
-									<Star className={cn("h-4 w-4")} />
+									<Star className="h-4 w-4" />
 									<span>
 										{repository.stargazerCount.toLocaleString()} stars
 									</span>
@@ -162,7 +162,7 @@ function RepositoryLayout() {
 										"flex items-center gap-1.5 text-muted-foreground",
 									)}
 								>
-									<GitFork className={cn("h-4 w-4")} />
+									<GitFork className="h-4 w-4" />
 									<span>{repository.forkCount.toLocaleString()} forks</span>
 								</div>
 							</div>

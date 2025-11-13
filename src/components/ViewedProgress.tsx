@@ -30,34 +30,29 @@ export function ViewedProgress({
 	const allViewed = viewedCount === totalCount && totalCount > 0;
 
 	return (
-		<div className={cn("sticky top-0 z-10 border-b bg-card")}>
-			<div
-				className={cn("flex items-center justify-between gap-4 px-4 py-2.5")}
-			>
-				<div className={cn("flex items-center gap-4")}>
-					<div className={cn("flex items-center gap-3")}>
-						<div className={cn("flex items-center gap-2")}>
-							<span className={cn("text-sm font-medium whitespace-nowrap")}>
+		<div className="sticky top-0 z-10 border-b bg-card">
+			<div className="flex items-center justify-between gap-4 px-4 py-2.5">
+				<div className="flex items-center gap-4">
+					<div className="flex items-center gap-3">
+						<div className="flex items-center gap-2">
+							<span className="text-sm font-medium whitespace-nowrap">
 								{viewedCount} / {totalCount}
 							</span>
 							{allViewed && (
-								<CheckCircle2 className={cn("h-3.5 w-3.5 text-green-600")} />
+								<CheckCircle2 className="h-3.5 w-3.5 text-green-600" />
 							)}
 						</div>
-						<Progress
-							value={percentage}
-							className={cn("h-1 w-24 opacity-60")}
-						/>
+						<Progress value={percentage} className="h-1 w-24 opacity-60" />
 					</div>
 
-					<div className={cn("flex items-center gap-2")}>
+					<div className="flex items-center gap-2">
 						{!allViewed && totalCount > 0 && (
 							<Button
 								variant="outline"
 								size="sm"
 								onClick={onMarkAllAsViewed}
 								disabled={isLoading}
-								className={cn("h-7 text-xs")}
+								className="h-7 text-xs"
 							>
 								Mark all viewed
 							</Button>
@@ -68,20 +63,20 @@ export function ViewedProgress({
 								size="sm"
 								onClick={onMarkAllAsUnviewed}
 								disabled={isLoading}
-								className={cn("h-7 text-xs")}
+								className="h-7 text-xs"
 							>
 								Mark all unviewed
 							</Button>
 						)}
 					</div>
 
-					<div className={cn("flex items-center gap-3 border-l pl-4")}>
-						<div className={cn("flex gap-1")}>
+					<div className="flex items-center gap-3 border-l pl-4">
+						<div className="flex gap-1">
 							<Button
 								variant={viewType === "unified" ? "default" : "outline"}
 								size="sm"
 								onClick={() => onViewTypeChange("unified")}
-								className={cn("h-7 text-xs")}
+								className="h-7 text-xs"
 							>
 								Unified
 							</Button>
@@ -89,7 +84,7 @@ export function ViewedProgress({
 								variant={viewType === "split" ? "default" : "outline"}
 								size="sm"
 								onClick={() => onViewTypeChange("split")}
-								className={cn("h-7 text-xs")}
+								className="h-7 text-xs"
 							>
 								Split
 							</Button>
@@ -109,12 +104,11 @@ export function ViewedProgress({
 					</div>
 				</div>
 
-				<p className={cn("text-xs text-muted-foreground whitespace-nowrap")}>
-					<kbd className={cn("rounded bg-muted px-1.5 py-0.5")}>j</kbd> /{" "}
-					<kbd className={cn("rounded bg-muted px-1.5 py-0.5")}>k</kbd>{" "}
-					navigate,{" "}
-					<kbd className={cn("rounded bg-muted px-1.5 py-0.5")}>v</kbd> viewed,{" "}
-					<kbd className={cn("rounded bg-muted px-1.5 py-0.5")}>x</kbd> expand
+				<p className="text-xs text-muted-foreground whitespace-nowrap">
+					<kbd className="rounded bg-muted px-1.5 py-0.5">j</kbd> /{" "}
+					<kbd className="rounded bg-muted px-1.5 py-0.5">k</kbd> navigate,{" "}
+					<kbd className="rounded bg-muted px-1.5 py-0.5">v</kbd> viewed,{" "}
+					<kbd className="rounded bg-muted px-1.5 py-0.5">x</kbd> expand
 				</p>
 			</div>
 		</div>

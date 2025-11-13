@@ -8,7 +8,6 @@ import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { Toaster } from "@/components/ui/sonner";
 import { useSystemTheme } from "@/hooks/useSystemTheme";
 import TanStackQueryDevtools from "@/integrations/tanstack-query/devtools";
-import { cn } from "@/lib/utils";
 
 interface MyRouterContext {
 	queryClient: QueryClient;
@@ -20,7 +19,7 @@ function RootComponent() {
 	return (
 		<SidebarProvider>
 			<AppSidebar />
-			<SidebarInset className={cn("flex flex-col")}>
+			<SidebarInset className="flex flex-col">
 				<Breadcrumbs />
 				<Outlet />
 			</SidebarInset>

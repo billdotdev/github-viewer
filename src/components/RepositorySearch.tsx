@@ -138,8 +138,8 @@ export function RepositorySearch({
 	};
 
 	return (
-		<div className={cn("relative w-full")}>
-			<div className={cn("relative")}>
+		<div className="relative w-full">
+			<div className="relative">
 				<Search
 					className={cn(
 						"absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground",
@@ -152,7 +152,7 @@ export function RepositorySearch({
 					onChange={(e) => setSearchQuery(e.target.value)}
 					onFocus={() => setShowResults(true)}
 					onBlur={() => setTimeout(() => setShowResults(false), 200)}
-					className={cn("pl-10")}
+					className="pl-10"
 				/>
 			</div>
 
@@ -163,19 +163,15 @@ export function RepositorySearch({
 					)}
 				>
 					{isLoading ? (
-						<div
-							className={cn("p-4 text-center text-sm text-muted-foreground")}
-						>
+						<div className="p-4 text-center text-sm text-muted-foreground">
 							Searching...
 						</div>
 					) : repositories.length === 0 ? (
-						<div
-							className={cn("p-4 text-center text-sm text-muted-foreground")}
-						>
+						<div className="p-4 text-center text-sm text-muted-foreground">
 							No repositories found
 						</div>
 					) : (
-						<ul className={cn("max-h-96 overflow-y-auto")}>
+						<ul className="max-h-96 overflow-y-auto">
 							{repositories.map((repo) => {
 								const owner = repo.owner.login;
 								const name = repo.name;
@@ -188,9 +184,9 @@ export function RepositorySearch({
 											"flex items-start gap-3 border-b p-3 last:border-b-0 hover:bg-accent",
 										)}
 									>
-										<div className={cn("min-w-0 flex-1")}>
-											<div className={cn("flex items-center gap-2")}>
-												<span className={cn("font-semibold text-sm")}>
+										<div className="min-w-0 flex-1">
+											<div className="flex items-center gap-2">
+												<span className="font-semibold text-sm">
 													{owner}/{name}
 												</span>
 												{repo.visibility === "PRIVATE" && (
@@ -218,9 +214,9 @@ export function RepositorySearch({
 												)}
 											>
 												{repo.primaryLanguage && (
-													<div className={cn("flex items-center gap-1")}>
+													<div className="flex items-center gap-1">
 														<span
-															className={cn("h-3 w-3 rounded-full")}
+															className="h-3 w-3 rounded-full"
 															style={{
 																backgroundColor:
 																	repo.primaryLanguage.color || "#ccc",
@@ -229,8 +225,8 @@ export function RepositorySearch({
 														<span>{repo.primaryLanguage.name}</span>
 													</div>
 												)}
-												<div className={cn("flex items-center gap-1")}>
-													<Star className={cn("h-3 w-3")} />
+												<div className="flex items-center gap-1">
+													<Star className="h-3 w-3" />
 													<span>{repo.stargazerCount.toLocaleString()}</span>
 												</div>
 											</div>
@@ -239,7 +235,7 @@ export function RepositorySearch({
 											variant={pinned ? "default" : "outline"}
 											size="sm"
 											onClick={() => handlePin(repo)}
-											className={cn("shrink-0")}
+											className="shrink-0"
 										>
 											<Star
 												className={cn("h-4 w-4", pinned && "fill-current")}

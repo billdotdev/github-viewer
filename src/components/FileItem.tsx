@@ -171,13 +171,13 @@ export function FileItem({
 	const getStatusIcon = () => {
 		switch (changeType) {
 			case "ADDED":
-				return <FilePlus className={cn("h-4 w-4 text-green-600")} />;
+				return <FilePlus className="h-4 w-4 text-green-600" />;
 			case "DELETED":
-				return <FileX className={cn("h-4 w-4 text-red-600")} />;
+				return <FileX className="h-4 w-4 text-red-600" />;
 			case "RENAMED":
-				return <FileIcon className={cn("h-4 w-4 text-blue-600")} />;
+				return <FileIcon className="h-4 w-4 text-blue-600" />;
 			default:
-				return <FileIcon className={cn("h-4 w-4 text-muted-foreground")} />;
+				return <FileIcon className="h-4 w-4 text-muted-foreground" />;
 		}
 	};
 
@@ -185,34 +185,25 @@ export function FileItem({
 		switch (changeType) {
 			case "ADDED":
 				return (
-					<Badge
-						variant="outline"
-						className={cn("border-green-600 text-green-600")}
-					>
+					<Badge variant="outline" className="border-green-600 text-green-600">
 						Added
 					</Badge>
 				);
 			case "DELETED":
 				return (
-					<Badge
-						variant="outline"
-						className={cn("border-red-600 text-red-600")}
-					>
+					<Badge variant="outline" className="border-red-600 text-red-600">
 						Deleted
 					</Badge>
 				);
 			case "RENAMED":
 				return (
-					<Badge
-						variant="outline"
-						className={cn("border-blue-600 text-blue-600")}
-					>
+					<Badge variant="outline" className="border-blue-600 text-blue-600">
 						Renamed
 					</Badge>
 				);
 			case "MODIFIED":
 				return (
-					<Badge variant="outline" className={cn("text-muted-foreground")}>
+					<Badge variant="outline" className="text-muted-foreground">
 						Modified
 					</Badge>
 				);
@@ -242,7 +233,7 @@ export function FileItem({
 					isActive ? "bg-accent" : ""
 				}`}
 			>
-				<div className={cn("flex items-center gap-3")}>
+				<div className="flex items-center gap-3">
 					<Button
 						variant="ghost"
 						size="sm"
@@ -250,23 +241,23 @@ export function FileItem({
 							e.stopPropagation();
 							handleToggleExpand();
 						}}
-						className={cn("h-6 w-6 p-0 shrink-0")}
+						className="h-6 w-6 p-0 shrink-0"
 					>
 						{isExpanded ? (
-							<ChevronDown className={cn("h-4 w-4")} />
+							<ChevronDown className="h-4 w-4" />
 						) : (
-							<ChevronRight className={cn("h-4 w-4")} />
+							<ChevronRight className="h-4 w-4" />
 						)}
 					</Button>
 
-					<div className={cn("shrink-0")}>
+					<div className="shrink-0">
 						<Checkbox
 							checked={isViewed}
 							onCheckedChange={() => {
 								onViewedToggle(path, viewerViewedState);
 							}}
 							onClick={(e) => e.stopPropagation()}
-							className={cn("h-4 w-4")}
+							className="h-4 w-4"
 							aria-label={`Mark ${path} as viewed`}
 						/>
 					</div>
@@ -279,29 +270,29 @@ export function FileItem({
 						onClick={onFocus}
 					>
 						{getStatusIcon()}
-						<div className={cn("flex-1 flex items-center min-w-0")}>
+						<div className="flex-1 flex items-center min-w-0">
 							{isRenamed && oldPath ? (
-								<div className={cn("text-sm")}>
-									<span className={cn("text-muted-foreground line-through")}>
+								<div className="text-sm">
+									<span className="text-muted-foreground line-through">
 										{oldPath}
 									</span>
-									<span className={cn("mx-2")}>→</span>
-									<span className={cn("font-mono")}>{path}</span>
+									<span className="mx-2">→</span>
+									<span className="font-mono">{path}</span>
 								</div>
 							) : (
-								<span className={cn("font-mono text-xs")}>{path}</span>
+								<span className="font-mono text-xs">{path}</span>
 							)}
 						</div>
 					</button>
 
 					{getStatusBadge()}
 
-					<div className={cn("flex items-center gap-3 text-xs shrink-0")}>
+					<div className="flex items-center gap-3 text-xs shrink-0">
 						{additions > 0 && (
-							<span className={cn("text-green-600")}>+{additions}</span>
+							<span className="text-green-600">+{additions}</span>
 						)}
 						{deletions > 0 && (
-							<span className={cn("text-red-600")}>-{deletions}</span>
+							<span className="text-red-600">-{deletions}</span>
 						)}
 					</div>
 
@@ -312,11 +303,11 @@ export function FileItem({
 							e.stopPropagation();
 							handleShowFullFile();
 						}}
-						className={cn("h-6 w-6 p-0 shrink-0")}
+						className="h-6 w-6 p-0 shrink-0"
 						disabled={isLoadingFullFile || changeType === "DELETED"}
 						title="View full file"
 					>
-						<Expand className={cn("h-3 w-3")} />
+						<Expand className="h-3 w-3" />
 					</Button>
 
 					<Button
@@ -326,44 +317,38 @@ export function FileItem({
 							e.stopPropagation();
 							handleCopyPath();
 						}}
-						className={cn("h-6 w-6 p-0 shrink-0")}
+						className="h-6 w-6 p-0 shrink-0"
 					>
-						<Copy className={cn("h-3 w-3")} />
+						<Copy className="h-3 w-3" />
 					</Button>
 				</div>
 			</div>
 
 			{isExpanded && (
-				<div className={cn("bg-background")}>
+				<div className="bg-background">
 					{isDiffLoading ? (
-						<div className={cn("flex items-center justify-center py-8")}>
-							<div className={cn("text-center")}>
+						<div className="flex items-center justify-center py-8">
+							<div className="text-center">
 								<div
 									className={cn(
 										"mx-auto mb-2 h-8 w-8 animate-spin rounded-full border-b-2 border-primary",
 									)}
 								/>
-								<p className={cn("text-sm text-muted-foreground")}>
-									Loading diff...
-								</p>
+								<p className="text-sm text-muted-foreground">Loading diff...</p>
 							</div>
 						</div>
 					) : diffData ? (
 						<>
 							{isBinary && (
-								<div
-									className={cn("border-t bg-muted/30 px-4 py-8 text-center")}
-								>
-									<p className={cn("text-sm text-muted-foreground")}>
+								<div className="border-t bg-muted/30 px-4 py-8 text-center">
+									<p className="text-sm text-muted-foreground">
 										Binary file not shown
 									</p>
 								</div>
 							)}
 							{!isBinary && diffData.file.hunks.length === 0 && (
-								<div
-									className={cn("border-t bg-muted/30 px-4 py-8 text-center")}
-								>
-									<p className={cn("text-sm text-muted-foreground")}>
+								<div className="border-t bg-muted/30 px-4 py-8 text-center">
+									<p className="text-sm text-muted-foreground">
 										Empty file or no changes to display
 									</p>
 								</div>
@@ -378,10 +363,8 @@ export function FileItem({
 							)}
 						</>
 					) : (
-						<div className={cn("border-t px-4 py-8 text-center")}>
-							<p className={cn("text-sm text-destructive")}>
-								Failed to load diff
-							</p>
+						<div className="border-t px-4 py-8 text-center">
+							<p className="text-sm text-destructive">Failed to load diff</p>
 						</div>
 					)}
 				</div>
@@ -394,11 +377,9 @@ export function FileItem({
 					)}
 				>
 					<DialogHeader>
-						<DialogTitle className={cn("font-mono text-sm")}>
-							{path}
-						</DialogTitle>
+						<DialogTitle className="font-mono text-sm">{path}</DialogTitle>
 					</DialogHeader>
-					<div className={cn("flex-1 overflow-auto")}>
+					<div className="flex-1 overflow-auto">
 						{fullFileContent && (
 							<SyntaxHighlighter
 								language={language}

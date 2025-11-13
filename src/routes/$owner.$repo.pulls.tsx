@@ -393,7 +393,7 @@ function RepositoryPullRequestsTab() {
 						updateFilter({ author: value === "all" ? undefined : value })
 					}
 				>
-					<SelectTrigger className={cn("w-[180px]")}>
+					<SelectTrigger className="w-[180px]">
 						<SelectValue placeholder="Filter by author" />
 					</SelectTrigger>
 					<SelectContent>
@@ -411,38 +411,34 @@ function RepositoryPullRequestsTab() {
 						variant="outline"
 						size="sm"
 						onClick={clearFilters}
-						className={cn("gap-1")}
+						className="gap-1"
 					>
-						<X className={cn("h-3 w-3")} />
+						<X className="h-3 w-3" />
 						Clear filters
 					</Button>
 				)}
 			</div>
 
 			{filteredPullRequests.length === 0 ? (
-				<div className={cn("flex flex-1 items-center justify-center p-8")}>
+				<div className="flex flex-1 items-center justify-center p-8">
 					{isLoading ? (
-						<div className={cn("text-center")}>
+						<div className="text-center">
 							<Loader2
 								className={cn(
 									"h-12 w-12 mx-auto mb-4 animate-spin text-muted-foreground",
 								)}
 							/>
-							<p className={cn("text-muted-foreground")}>
-								Loading pull requests...
-							</p>
+							<p className="text-muted-foreground">Loading pull requests...</p>
 						</div>
 					) : (
-						<div className={cn("text-center")}>
-							<Circle
-								className={cn("h-12 w-12 mx-auto mb-4 text-muted-foreground")}
-							/>
-							<h3 className={cn("text-lg font-semibold mb-2")}>
+						<div className="text-center">
+							<Circle className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
+							<h3 className="text-lg font-semibold mb-2">
 								{hasActiveFilters
 									? "No pull requests match your filters"
 									: `No ${searchParams.state || "open"} pull requests`}
 							</h3>
-							<p className={cn("text-muted-foreground mb-4")}>
+							<p className="text-muted-foreground mb-4">
 								{hasActiveFilters
 									? "Try adjusting your search or filters"
 									: `There are no ${searchParams.state || "open"} pull requests for this repository`}
@@ -457,8 +453,8 @@ function RepositoryPullRequestsTab() {
 				</div>
 			) : (
 				<>
-					<div className={cn("rounded-md border bg-card")}>
-						<ul className={cn("divide-y")}>
+					<div className="rounded-md border bg-card">
+						<ul className="divide-y">
 							{filteredPullRequests.map((pr, index) => {
 								if (!pr) return null;
 								return (
@@ -475,9 +471,9 @@ function RepositoryPullRequestsTab() {
 												"block transition-colors hover:bg-accent/50 focus:bg-accent/50",
 											)}
 										>
-											<div className={cn("px-4 py-2")}>
-												<div className={cn("flex items-start gap-3")}>
-													<div className={cn("pt-0.5")}>
+											<div className="px-4 py-2">
+												<div className="flex items-start gap-3">
+													<div className="pt-0.5">
 														<PrStateIcon
 															state={
 																pr.isDraft && pr.state === "OPEN"
@@ -567,20 +563,15 @@ function RepositoryPullRequestsTab() {
 						</ul>
 					</div>
 
-					<div
-						ref={loadMoreRef}
-						className={cn("mt-4 flex justify-center py-4")}
-					>
+					<div ref={loadMoreRef} className="mt-4 flex justify-center py-4">
 						{isFetchingNextPage && (
-							<div
-								className={cn("flex items-center gap-2 text-muted-foreground")}
-							>
-								<Loader2 className={cn("h-5 w-5 animate-spin")} />
+							<div className="flex items-center gap-2 text-muted-foreground">
+								<Loader2 className="h-5 w-5 animate-spin" />
 								<span>Loading more...</span>
 							</div>
 						)}
 						{!hasNextPage && filteredPullRequests.length > 0 && (
-							<p className={cn("text-sm text-muted-foreground")}>
+							<p className="text-sm text-muted-foreground">
 								No more pull requests to load
 							</p>
 						)}

@@ -69,22 +69,22 @@ export function RepositoryCard({ repository, onUnpin }: RepositoryCardProps) {
 	};
 
 	return (
-		<Card className={cn("transition-colors hover:bg-accent/50")}>
+		<Card className="transition-colors hover:bg-accent/50">
 			<Link
 				to="/$owner/$repo/pulls"
 				params={{ owner, repo: name }}
-				className={cn("block")}
+				className="block"
 			>
-				<CardHeader className={cn("pb-3")}>
-					<div className={cn("flex items-start justify-between gap-3")}>
-						<div className={cn("min-w-0 flex-1")}>
-							<div className={cn("flex items-center gap-2 flex-wrap")}>
-								<h3 className={cn("font-semibold text-lg text-primary")}>
+				<CardHeader className="pb-3">
+					<div className="flex items-start justify-between gap-3">
+						<div className="min-w-0 flex-1">
+							<div className="flex items-center gap-2 flex-wrap">
+								<h3 className="font-semibold text-lg text-primary">
 									{owner}/{name}
 								</h3>
 								{visibility === "PRIVATE" && (
-									<Badge variant="secondary" className={cn("gap-1")}>
-										<Lock className={cn("h-3 w-3")} />
+									<Badge variant="secondary" className="gap-1">
+										<Lock className="h-3 w-3" />
 										<span>Private</span>
 									</Badge>
 								)}
@@ -103,46 +103,42 @@ export function RepositoryCard({ repository, onUnpin }: RepositoryCardProps) {
 							variant={pinned ? "default" : "ghost"}
 							size="icon"
 							onClick={handleTogglePin}
-							className={cn("shrink-0")}
+							className="shrink-0"
 						>
 							<Star className={cn("h-4 w-4", pinned && "fill-current")} />
 						</Button>
 					</div>
 				</CardHeader>
 				<CardContent>
-					<div className={cn("flex flex-wrap items-center gap-4 text-sm")}>
+					<div className="flex flex-wrap items-center gap-4 text-sm">
 						{language && (
-							<div className={cn("flex items-center gap-1.5")}>
+							<div className="flex items-center gap-1.5">
 								<span
-									className={cn("h-3 w-3 rounded-full")}
+									className="h-3 w-3 rounded-full"
 									style={{ backgroundColor: languageColor || "#ccc" }}
 								/>
-								<span className={cn("text-muted-foreground")}>{language}</span>
+								<span className="text-muted-foreground">{language}</span>
 							</div>
 						)}
-						<div
-							className={cn("flex items-center gap-1.5 text-muted-foreground")}
-						>
-							<Star className={cn("h-4 w-4")} />
+						<div className="flex items-center gap-1.5 text-muted-foreground">
+							<Star className="h-4 w-4" />
 							<span>{stargazerCount.toLocaleString()}</span>
 						</div>
-						<div
-							className={cn("flex items-center gap-1.5 text-muted-foreground")}
-						>
-							<GitFork className={cn("h-4 w-4")} />
+						<div className="flex items-center gap-1.5 text-muted-foreground">
+							<GitFork className="h-4 w-4" />
 							<span>{forkCount.toLocaleString()}</span>
 						</div>
-						<span className={cn("text-muted-foreground text-xs")}>
+						<span className="text-muted-foreground text-xs">
 							Updated {getRelativeTime()}
 						</span>
 					</div>
 					{topics.length > 0 && (
-						<div className={cn("mt-3 flex flex-wrap gap-1.5")}>
+						<div className="mt-3 flex flex-wrap gap-1.5">
 							{topics.slice(0, 5).map((topic) => (
 								<Badge
 									key={topic}
 									variant="secondary"
-									className={cn("text-xs font-normal")}
+									className="text-xs font-normal"
 								>
 									{topic}
 								</Badge>

@@ -88,30 +88,26 @@ function PullRequestCommits() {
 		) || [];
 
 	return (
-		<div className={cn("space-y-3 mx-auto w-full max-w-5xl pt-3")}>
+		<div className="space-y-3 mx-auto w-full max-w-5xl pt-3">
 			{isCommitsLoading ? (
 				<Card>
-					<CardContent
-						className={cn("flex min-h-[200px] items-center justify-center")}
-					>
-						<div className={cn("text-center")}>
+					<CardContent className="flex min-h-[200px] items-center justify-center">
+						<div className="text-center">
 							<div
 								className={cn(
 									"mx-auto mb-2 h-8 w-8 animate-spin rounded-full border-b-2 border-primary",
 								)}
 							/>
-							<p className={cn("text-sm text-muted-foreground")}>
+							<p className="text-sm text-muted-foreground">
 								Loading commits...
 							</p>
 						</div>
 					</CardContent>
 				</Card>
 			) : commitsError ? (
-				<Card className={cn("border-destructive")}>
-					<CardContent className={cn("pt-6")}>
-						<p className={cn("text-sm text-destructive")}>
-							Failed to load commits
-						</p>
+				<Card className="border-destructive">
+					<CardContent className="pt-6">
+						<p className="text-sm text-destructive">Failed to load commits</p>
 					</CardContent>
 				</Card>
 			) : commits.length === 0 ? (
@@ -121,33 +117,28 @@ function PullRequestCommits() {
 							"flex min-h-[200px] flex-col items-center justify-center",
 						)}
 					>
-						<GitCommit className={cn("mb-3 h-12 w-12 text-muted-foreground")} />
-						<p className={cn("text-muted-foreground")}>No commits yet</p>
+						<GitCommit className="mb-3 h-12 w-12 text-muted-foreground" />
+						<p className="text-muted-foreground">No commits yet</p>
 					</CardContent>
 				</Card>
 			) : (
 				commits.map((commitNode) => {
 					const commit = commitNode.commit;
 					return (
-						<Card
-							key={commit.id}
-							className={cn("transition-all hover:shadow-md")}
-						>
+						<Card key={commit.id} className="transition-all hover:shadow-md">
 							<CardContent>
-								<div className={cn("flex items-start gap-4")}>
+								<div className="flex items-start gap-4">
 									{commit.author?.user?.avatarUrl && (
 										<img
 											src={commit.author.user.avatarUrl}
 											alt={commit.author.user.login}
-											className={cn("h-8 w-8 rounded-full")}
+											className="h-8 w-8 rounded-full"
 										/>
 									)}
-									<div className={cn("flex-1 min-w-0")}>
-										<div
-											className={cn("flex items-start justify-between gap-4")}
-										>
-											<div className={cn("flex-1 min-w-0")}>
-												<p className={cn("mb-1 font-medium")}>
+									<div className="flex-1 min-w-0">
+										<div className="flex items-start justify-between gap-4">
+											<div className="flex-1 min-w-0">
+												<p className="mb-1 font-medium">
 													{commit.messageHeadline}
 												</p>
 												<div
@@ -173,15 +164,15 @@ function PullRequestCommits() {
 													</span>
 												</div>
 											</div>
-											<div className={cn("flex items-center gap-3 text-xs")}>
-												<Badge variant="secondary" className={cn("font-mono")}>
+											<div className="flex items-center gap-3 text-xs">
+												<Badge variant="secondary" className="font-mono">
 													{commit.oid.substring(0, 7)}
 												</Badge>
-												<div className={cn("flex items-center gap-2")}>
-													<span className={cn("text-green-600")}>
+												<div className="flex items-center gap-2">
+													<span className="text-green-600">
 														+{commit.additions}
 													</span>
-													<span className={cn("text-red-600")}>
+													<span className="text-red-600">
 														-{commit.deletions}
 													</span>
 												</div>

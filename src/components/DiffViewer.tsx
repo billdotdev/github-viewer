@@ -34,7 +34,6 @@ import typescript from "refractor/lang/typescript";
 import yaml from "refractor/lang/yaml";
 import type { ParsedDiffFile } from "../lib/diffParser";
 import { getFileExtension, getLanguageFromExtension } from "../lib/diffParser";
-import { cn } from "../lib/utils";
 
 refractor.register(typescript);
 refractor.register(javascript);
@@ -71,10 +70,8 @@ export function DiffViewer({
 }: DiffViewerProps) {
 	if (file.isBinary) {
 		return (
-			<div className={cn("border-t bg-muted/30 px-4 py-8 text-center")}>
-				<p className={cn("text-sm text-muted-foreground")}>
-					Binary file not shown
-				</p>
+			<div className="border-t bg-muted/30 px-4 py-8 text-center">
+				<p className="text-sm text-muted-foreground">Binary file not shown</p>
 			</div>
 		);
 	}
@@ -149,8 +146,8 @@ function ReactDiffViewRenderer({
 
 		if (!file) {
 			return (
-				<div className={cn("px-4 py-8 text-center")}>
-					<p className={cn("text-sm text-muted-foreground")}>
+				<div className="px-4 py-8 text-center">
+					<p className="text-sm text-muted-foreground">
 						No diff content available
 					</p>
 				</div>
@@ -158,7 +155,7 @@ function ReactDiffViewRenderer({
 		}
 
 		return (
-			<div className={cn("overflow-x-auto bg-background -mt-6")}>
+			<div className="overflow-x-auto bg-background -mt-6">
 				<style>
 					{`
 						.diff-view {
@@ -178,7 +175,7 @@ function ReactDiffViewRenderer({
 						}
 					`}
 				</style>
-				<div className={cn("diff-view")}>
+				<div className="diff-view">
 					<Diff
 						viewType={viewType}
 						diffType={file.type}
@@ -195,8 +192,8 @@ function ReactDiffViewRenderer({
 	} catch (error) {
 		console.error("Diff parsing error:", error);
 		return (
-			<div className={cn("px-4 py-8 text-center")}>
-				<p className={cn("text-sm text-destructive")}>Failed to parse diff</p>
+			<div className="px-4 py-8 text-center">
+				<p className="text-sm text-destructive">Failed to parse diff</p>
 			</div>
 		);
 	}
@@ -273,12 +270,9 @@ function ReactSyntaxHighlighterRenderer({
 
 	if (viewType === "split") {
 		return (
-			<div className={cn("overflow-x-auto max-w-full")}>
-				<div
-					className={cn("flex min-w-full")}
-					style={{ backgroundColor: bgColor }}
-				>
-					<div className={cn("w-1/2 border-r")}>
+			<div className="overflow-x-auto max-w-full">
+				<div className="flex min-w-full" style={{ backgroundColor: bgColor }}>
+					<div className="w-1/2 border-r">
 						{file.hunks.map((hunk, hunkIdx) =>
 							hunk.lines.map((line, lineIdx) => {
 								const lineKey = `old-${hunkIdx}-${lineIdx}`;
@@ -298,7 +292,7 @@ function ReactSyntaxHighlighterRenderer({
 											<div
 												className={`min-w-[60px] select-none px-2 py-1 text-right text-xs ${lineNumberColor}`}
 											/>
-											<div className={cn("flex-1")} />
+											<div className="flex-1" />
 										</div>
 									);
 								}
@@ -323,7 +317,7 @@ function ReactSyntaxHighlighterRenderer({
 										>
 											{line.oldLineNumber}
 										</div>
-										<div className={cn("flex-1 min-w-0 overflow-x-auto")}>
+										<div className="flex-1 min-w-0 overflow-x-auto">
 											<SyntaxHighlighter
 												language={language}
 												style={style}
@@ -354,7 +348,7 @@ function ReactSyntaxHighlighterRenderer({
 						)}
 					</div>
 
-					<div className={cn("w-1/2")}>
+					<div className="w-1/2">
 						{file.hunks.map((hunk, hunkIdx) =>
 							hunk.lines.map((line, lineIdx) => {
 								const lineKey = `new-${hunkIdx}-${lineIdx}`;
@@ -373,7 +367,7 @@ function ReactSyntaxHighlighterRenderer({
 											<div
 												className={`min-w-[60px] select-none px-2 py-1 text-right text-xs ${lineNumberColor}`}
 											/>
-											<div className={cn("flex-1")} />
+											<div className="flex-1" />
 										</div>
 									);
 								}
@@ -398,7 +392,7 @@ function ReactSyntaxHighlighterRenderer({
 										>
 											{line.newLineNumber}
 										</div>
-										<div className={cn("flex-1 min-w-0 overflow-x-auto")}>
+										<div className="flex-1 min-w-0 overflow-x-auto">
 											<SyntaxHighlighter
 												language={language}
 												style={style}
@@ -442,8 +436,8 @@ function ReactSyntaxHighlighterRenderer({
 	);
 
 	return (
-		<div className={cn("overflow-x-auto max-w-full")}>
-			<div className={cn("min-w-full")} style={{ backgroundColor: bgColor }}>
+		<div className="overflow-x-auto max-w-full">
+			<div className="min-w-full" style={{ backgroundColor: bgColor }}>
 				{lines.map((line, idx) => {
 					const lineBgColor = isDark
 						? line.type === "add"
@@ -473,7 +467,7 @@ function ReactSyntaxHighlighterRenderer({
 							>
 								{line.lineNumber}
 							</div>
-							<div className={cn("flex-1 min-w-0 overflow-x-auto")}>
+							<div className="flex-1 min-w-0 overflow-x-auto">
 								<SyntaxHighlighter
 									language={language}
 									style={style}

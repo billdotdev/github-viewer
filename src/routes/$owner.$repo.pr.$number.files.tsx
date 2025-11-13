@@ -311,18 +311,14 @@ function PullRequestFiles() {
 	if (isFilesLoading) {
 		return (
 			<Card>
-				<CardContent
-					className={cn("flex min-h-[400px] items-center justify-center")}
-				>
-					<div className={cn("text-center")}>
+				<CardContent className="flex min-h-[400px] items-center justify-center">
+					<div className="text-center">
 						<div
 							className={cn(
 								"mx-auto mb-2 h-8 w-8 animate-spin rounded-full border-b-2 border-primary",
 							)}
 						/>
-						<p className={cn("text-sm text-muted-foreground")}>
-							Loading files...
-						</p>
+						<p className="text-sm text-muted-foreground">Loading files...</p>
 					</div>
 				</CardContent>
 			</Card>
@@ -331,9 +327,9 @@ function PullRequestFiles() {
 
 	if (filesError) {
 		return (
-			<Card className={cn("border-destructive")}>
-				<CardContent className={cn("pt-6")}>
-					<p className={cn("text-sm text-destructive")}>Failed to load files</p>
+			<Card className="border-destructive">
+				<CardContent className="pt-6">
+					<p className="text-sm text-destructive">Failed to load files</p>
 				</CardContent>
 			</Card>
 		);
@@ -347,15 +343,15 @@ function PullRequestFiles() {
 						"flex min-h-[400px] flex-col items-center justify-center",
 					)}
 				>
-					<FileDiff className={cn("mb-3 h-12 w-12 text-muted-foreground")} />
-					<p className={cn("text-muted-foreground")}>No files changed</p>
+					<FileDiff className="mb-3 h-12 w-12 text-muted-foreground" />
+					<p className="text-muted-foreground">No files changed</p>
 				</CardContent>
 			</Card>
 		);
 	}
 
 	return (
-		<div className={cn("flex flex-1 mx-auto w-[calc(100%-300px)]")}>
+		<div className="flex flex-1 mx-auto w-[calc(100%-300px)]">
 			{!isMobile && (
 				<ResizableSidebar defaultWidth={300} minWidth={200} maxWidth={600}>
 					<FileFilter
@@ -375,7 +371,7 @@ function PullRequestFiles() {
 				</ResizableSidebar>
 			)}
 
-			<div className={cn("flex flex-1 flex-col overflow-hidden")}>
+			<div className="flex flex-1 flex-col overflow-hidden">
 				<ViewedProgress
 					viewedCount={viewedCount}
 					totalCount={totalCount}
@@ -394,12 +390,10 @@ function PullRequestFiles() {
 					}
 				/>
 
-				<div ref={scrollContainerRef} className={cn("flex-1")}>
+				<div ref={scrollContainerRef} className="flex-1">
 					{filteredFiles.length === 0 ? (
-						<div
-							className={cn("flex min-h-[400px] items-center justify-center")}
-						>
-							<p className={cn("text-muted-foreground")}>
+						<div className="flex min-h-[400px] items-center justify-center">
+							<p className="text-muted-foreground">
 								No files match the current filters
 							</p>
 						</div>
@@ -418,22 +412,22 @@ function PullRequestFiles() {
 								onFileViewedChange={handleFileViewedChange}
 							/>
 							{isFetchingNextPage && (
-								<div className={cn("flex items-center justify-center py-8")}>
-									<div className={cn("text-center")}>
+								<div className="flex items-center justify-center py-8">
+									<div className="text-center">
 										<div
 											className={cn(
 												"mx-auto mb-2 h-6 w-6 animate-spin rounded-full border-b-2 border-primary",
 											)}
 										/>
-										<p className={cn("text-xs text-muted-foreground")}>
+										<p className="text-xs text-muted-foreground">
 											Loading more files...
 										</p>
 									</div>
 								</div>
 							)}
 							{!hasNextPage && allFiles.length > 0 && (
-								<div className={cn("flex items-center justify-center py-8")}>
-									<p className={cn("text-xs text-muted-foreground")}>
+								<div className="flex items-center justify-center py-8">
+									<p className="text-xs text-muted-foreground">
 										All {totalCount} files loaded
 									</p>
 								</div>

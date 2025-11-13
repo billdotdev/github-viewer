@@ -166,27 +166,25 @@ function PullRequestConversation() {
 	);
 
 	return (
-		<div className={cn("space-y-3 mx-auto w-full max-w-4xl pt-3")}>
+		<div className="space-y-3 mx-auto w-full max-w-4xl pt-3">
 			{pr.bodyHTML && (
 				<Card>
 					<CardContent>
-						<div className={cn("flex items-start gap-4")}>
+						<div className="flex items-start gap-4">
 							{pr.author?.avatarUrl && (
 								<img
 									src={pr.author.avatarUrl}
 									alt={pr.author.login}
-									className={cn("h-8 w-8 rounded-full")}
+									className="h-8 w-8 rounded-full"
 								/>
 							)}
-							<div className={cn("flex-1")}>
-								<div className={cn("mb-2 flex items-center gap-2")}>
-									<span className={cn("font-semibold")}>
-										{pr.author?.login}
-									</span>
-									<span className={cn("text-sm text-muted-foreground")}>
+							<div className="flex-1">
+								<div className="mb-2 flex items-center gap-2">
+									<span className="font-semibold">{pr.author?.login}</span>
+									<span className="text-sm text-muted-foreground">
 										opened this pull request
 									</span>
-									<span className={cn("text-sm text-muted-foreground")}>
+									<span className="text-sm text-muted-foreground">
 										{new Date(pr.createdAt).toLocaleDateString("en-US", {
 											month: "short",
 											day: "numeric",
@@ -195,7 +193,7 @@ function PullRequestConversation() {
 									</span>
 								</div>
 								<div
-									className={cn("prose prose-sm max-w-none text-sm")}
+									className="prose prose-sm max-w-none text-sm"
 									// biome-ignore lint/security/noDangerouslySetInnerHtml: HTML is sanitized with DOMPurify
 									dangerouslySetInnerHTML={{
 										__html: sanitizeHTML(pr.bodyHTML || ""),
@@ -209,27 +207,23 @@ function PullRequestConversation() {
 
 			{isCommentsLoading ? (
 				<Card>
-					<CardContent
-						className={cn("flex min-h-[200px] items-center justify-center")}
-					>
-						<div className={cn("text-center")}>
+					<CardContent className="flex min-h-[200px] items-center justify-center">
+						<div className="text-center">
 							<div
 								className={cn(
 									"mx-auto mb-2 h-8 w-8 animate-spin rounded-full border-b-2 border-primary",
 								)}
 							/>
-							<p className={cn("text-sm text-muted-foreground")}>
+							<p className="text-sm text-muted-foreground">
 								Loading comments...
 							</p>
 						</div>
 					</CardContent>
 				</Card>
 			) : commentsError ? (
-				<Card className={cn("border-destructive")}>
+				<Card className="border-destructive">
 					<CardContent>
-						<p className={cn("text-sm text-destructive")}>
-							Failed to load comments
-						</p>
+						<p className="text-sm text-destructive">Failed to load comments</p>
 					</CardContent>
 				</Card>
 			) : allTimelineItems.length === 0 ? (
@@ -239,29 +233,25 @@ function PullRequestConversation() {
 							"flex min-h-[200px] flex-col items-center justify-center",
 						)}
 					>
-						<MessageSquare
-							className={cn("mb-3 h-12 w-12 text-muted-foreground")}
-						/>
-						<p className={cn("text-muted-foreground")}>No comments yet</p>
+						<MessageSquare className="mb-3 h-12 w-12 text-muted-foreground" />
+						<p className="text-muted-foreground">No comments yet</p>
 					</CardContent>
 				</Card>
 			) : (
 				allTimelineItems.map((item) => (
 					<Card key={item.id}>
 						<CardContent>
-							<div className={cn("flex items-start gap-4 overflow-y-auto")}>
+							<div className="flex items-start gap-4 overflow-y-auto">
 								{item.author?.avatarUrl && (
 									<img
 										src={item.author.avatarUrl}
 										alt={item.author.login}
-										className={cn("h-8 w-8 rounded-full")}
+										className="h-8 w-8 rounded-full"
 									/>
 								)}
-								<div className={cn("flex-1")}>
-									<div className={cn("mb-2 flex items-center gap-2")}>
-										<span className={cn("font-semibold")}>
-											{item.author?.login}
-										</span>
+								<div className="flex-1">
+									<div className="mb-2 flex items-center gap-2">
+										<span className="font-semibold">{item.author?.login}</span>
 										{item.type === "review" && (
 											<Badge
 												variant={
@@ -282,7 +272,7 @@ function PullRequestConversation() {
 														: "Commented"}
 											</Badge>
 										)}
-										<span className={cn("text-sm text-muted-foreground")}>
+										<span className="text-sm text-muted-foreground">
 											{new Date(item.createdAt).toLocaleDateString("en-US", {
 												month: "short",
 												day: "numeric",
@@ -292,7 +282,7 @@ function PullRequestConversation() {
 									</div>
 									{item.bodyHTML && (
 										<div
-											className={cn("prose prose-sm max-w-none text-sm")}
+											className="prose prose-sm max-w-none text-sm"
 											// biome-ignore lint/security/noDangerouslySetInnerHtml: HTML is sanitized with DOMPurify
 											dangerouslySetInnerHTML={{
 												__html: sanitizeHTML(item.bodyHTML),

@@ -52,7 +52,7 @@ export function FileTree({
 	const tree = buildFileTree(files);
 
 	return (
-		<div className={cn("space-y-1 py-2")}>
+		<div className="space-y-1 py-2">
 			{tree.map((node) => (
 				<TreeNodeComponent
 					key={node.path}
@@ -170,14 +170,12 @@ function TreeNodeComponent({
 					style={{ paddingLeft: `${depth * 12 + 8}px` }}
 				>
 					{isExpanded ? (
-						<ChevronDown className={cn("h-3 w-3 shrink-0")} />
+						<ChevronDown className="h-3 w-3 shrink-0" />
 					) : (
-						<ChevronRight className={cn("h-3 w-3 shrink-0")} />
+						<ChevronRight className="h-3 w-3 shrink-0" />
 					)}
-					<FolderIcon
-						className={cn("h-4 w-4 shrink-0 text-muted-foreground")}
-					/>
-					<span className={cn("truncate")}>{node.name}</span>
+					<FolderIcon className="h-4 w-4 shrink-0 text-muted-foreground" />
+					<span className="truncate">{node.name}</span>
 				</button>
 				{isExpanded && (
 					<div>
@@ -203,15 +201,13 @@ function TreeNodeComponent({
 	const getStatusIcon = () => {
 		switch (node.changeType) {
 			case "ADDED":
-				return <FilePlus className={cn("h-4 w-4 shrink-0 text-green-600")} />;
+				return <FilePlus className="h-4 w-4 shrink-0 text-green-600" />;
 			case "DELETED":
-				return <FileX className={cn("h-4 w-4 shrink-0 text-red-600")} />;
+				return <FileX className="h-4 w-4 shrink-0 text-red-600" />;
 			case "RENAMED":
-				return <FileIcon className={cn("h-4 w-4 shrink-0 text-blue-600")} />;
+				return <FileIcon className="h-4 w-4 shrink-0 text-blue-600" />;
 			default:
-				return (
-					<FileIcon className={cn("h-4 w-4 shrink-0 text-muted-foreground")} />
-				);
+				return <FileIcon className="h-4 w-4 shrink-0 text-muted-foreground" />;
 		}
 	};
 
@@ -224,14 +220,14 @@ function TreeNodeComponent({
 			)}
 			style={{ paddingLeft: `${depth * 12 + 20}px` }}
 		>
-			<div className={cn("shrink-0")}>
+			<div className="shrink-0">
 				<Checkbox
 					checked={isViewed}
 					onCheckedChange={() =>
 						onViewedToggle(node.path, node.viewerViewedState)
 					}
 					onClick={(e) => e.stopPropagation()}
-					className={cn("h-3 w-3")}
+					className="h-3 w-3"
 					aria-label={`Mark ${node.name} as viewed`}
 				/>
 			</div>
@@ -243,13 +239,13 @@ function TreeNodeComponent({
 				)}
 			>
 				{getStatusIcon()}
-				<span className={cn("flex-1 truncate text-left")}>{node.name}</span>
-				<div className={cn("flex shrink-0 items-center gap-1 text-xs")}>
+				<span className="flex-1 truncate text-left">{node.name}</span>
+				<div className="flex shrink-0 items-center gap-1 text-xs">
 					{node.additions > 0 && (
-						<span className={cn("text-green-600")}>+{node.additions}</span>
+						<span className="text-green-600">+{node.additions}</span>
 					)}
 					{node.deletions > 0 && (
-						<span className={cn("text-red-600")}>-{node.deletions}</span>
+						<span className="text-red-600">-{node.deletions}</span>
 					)}
 				</div>
 			</button>

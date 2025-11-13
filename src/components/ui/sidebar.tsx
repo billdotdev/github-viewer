@@ -196,11 +196,11 @@ function Sidebar({
 					}
 					side={side}
 				>
-					<SheetHeader className={cn("sr-only")}>
+					<SheetHeader className="sr-only">
 						<SheetTitle>Sidebar</SheetTitle>
 						<SheetDescription>Displays the mobile sidebar.</SheetDescription>
 					</SheetHeader>
-					<div className={cn("flex h-full w-full flex-col")}>{children}</div>
+					<div className="flex h-full w-full flex-col">{children}</div>
 				</SheetContent>
 			</Sheet>
 		);
@@ -208,7 +208,7 @@ function Sidebar({
 
 	return (
 		<div
-			className={cn("group peer text-sidebar-foreground hidden md:block")}
+			className="group peer text-sidebar-foreground hidden md:block"
 			data-state={state}
 			data-collapsible={state === "collapsed" ? collapsible : ""}
 			data-variant={variant}
@@ -277,7 +277,7 @@ function SidebarTrigger({
 			{...props}
 		>
 			<PanelLeftIcon />
-			<span className={cn("sr-only")}>Toggle Sidebar</span>
+			<span className="sr-only">Toggle Sidebar</span>
 		</Button>
 	);
 }
@@ -623,12 +623,12 @@ function SidebarMenuSkeleton({
 		>
 			{showIcon && (
 				<Skeleton
-					className={cn("size-4 rounded-md")}
+					className="size-4 rounded-md"
 					data-sidebar="menu-skeleton-icon"
 				/>
 			)}
 			<Skeleton
-				className={cn("h-4 max-w-(--skeleton-width) flex-1")}
+				className="h-4 max-w-(--skeleton-width) flex-1"
 				data-sidebar="menu-skeleton-text"
 				style={
 					{
