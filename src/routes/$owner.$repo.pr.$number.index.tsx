@@ -62,10 +62,10 @@ export const Route = createFileRoute("/$owner/$repo/pr/$number/")({
 		const prNumber = Number.parseInt(params.number, 10);
 
 		await Promise.all([
-			queryClient.ensureQueryData(
+			queryClient.fetchQuery(
 				getPullRequestBodyQueryOptions(params.owner, params.repo, prNumber),
 			),
-			queryClient.ensureQueryData(
+			queryClient.fetchQuery(
 				getPullRequestCommentsQueryOptions(params.owner, params.repo, prNumber),
 			),
 		]);

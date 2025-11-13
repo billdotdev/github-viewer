@@ -1,20 +1,38 @@
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { gql } from "graphql-request";
+import { GitFork, Lock, Star } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import type {
 	GetRepositoryCodeQuery,
 	GetRepositoryCodeQueryVariables,
+	GetRepositoryQuery,
+	GetRepositoryQueryVariables,
 } from "@/generated/graphql";
 import { getGraphQLClient } from "@/lib/graphqlClient";
 import { cn } from "@/lib/utils";
+
+const GET_REPOSITORY = gql`
+	query GetRepository($owner: String!, $name: String!) {
+		repository(owner: $owner, name: $name) {
+			id
+			name
+			stargazerCount
+			forkCount
+			visibility
+			primaryLanguage {
+				name
+				color
+			}
+		}
+	}
+`;
 
 const GET_REPOSITORY_CODE = gql`
 	query GetRepositoryCode($owner: String!, $name: String!) {
 		repository(owner: $owner, name: $name) {
 			defaultBranchRef {
-				name
 				target {
 					... on Commit {
 						history(first: 20) {
@@ -22,11 +40,8 @@ const GET_REPOSITORY_CODE = gql`
 							nodes {
 								oid
 								messageHeadline
-								message
 								committedDate
 								author {
-									name
-									email
 									avatarUrl
 									user {
 										login
@@ -40,6 +55,22 @@ const GET_REPOSITORY_CODE = gql`
 		}
 	}
 `;
+
+const getRepositoryQueryOptions = (owner: string, repo: string) => {
+	const graphQLClient = getGraphQLClient();
+	return {
+		queryKey: ["repository", owner, repo],
+		queryFn: async () => {
+			return graphQLClient.request<
+				GetRepositoryQuery,
+				GetRepositoryQueryVariables
+			>(GET_REPOSITORY, {
+				owner,
+				name: repo,
+			});
+		},
+	};
+};
 
 const getRepositoryCodeQueryOptions = (owner: string, repo: string) => {
 	const graphQLClient = getGraphQLClient();
@@ -60,18 +91,33 @@ const getRepositoryCodeQueryOptions = (owner: string, repo: string) => {
 export const Route = createFileRoute("/$owner/$repo/")({
 	component: RepositoryCodeTab,
 	loader: async ({ params, context: { queryClient } }) => {
-		await queryClient.ensureQueryData(
-			getRepositoryCodeQueryOptions(params.owner, params.repo),
-		);
+		await Promise.all([
+			queryClient.fetchQuery(
+				getRepositoryQueryOptions(params.owner, params.repo),
+			),
+
+			queryClient.fetchQuery(
+				getRepositoryCodeQueryOptions(params.owner, params.repo),
+			),
+		]);
 	},
 });
 
 function RepositoryCodeTab() {
 	const { owner, repo } = Route.useParams();
 
-	const { data } = useQuery(getRepositoryCodeQueryOptions(owner, repo));
+	const { data } = useQuery(getRepositoryQueryOptions(owner, repo));
+	const { data: codeData } = useQuery(
+		getRepositoryCodeQueryOptions(owner, repo),
+	);
 
-	const branch = data?.repository?.defaultBranchRef;
+	const repository = data?.repository;
+
+	if (!repository) {
+		return null;
+	}
+
+	const branch = codeData?.repository?.defaultBranchRef;
 	const commits =
 		branch?.target && "history" in branch.target
 			? branch?.target?.history?.nodes || []
@@ -92,8 +138,59 @@ function RepositoryCodeTab() {
 	}
 
 	return (
-		<div className="flex-1 overflow-auto">
-			<div className="max-w-6xl mx-auto px-4 py-3 space-y-3">
+		<>
+			<div className="bg-card shrink-0 w-full">
+				<div className="max-w-6xl mx-auto px-5 pt-4">
+					<div className="flex items-start justify-between gap-4">
+						<div className="mb-2 flex items-center gap-2 flex-wrap">
+							<h1 className="text-xl font-semibold">
+								{owner}/{repo}
+							</h1>
+							{repository.visibility === "PRIVATE" && (
+								<Badge variant="secondary" className="gap-1">
+									<Lock className="h-3 w-3" />
+									<span>Private</span>
+								</Badge>
+							)}
+						</div>
+
+						<div className="flex flex-wrap items-center gap-3 text-sm">
+							{repository.primaryLanguage && (
+								<div className="flex items-center gap-1.5">
+									<span
+										className="h-3 w-3 rounded-full"
+										style={{
+											backgroundColor:
+												repository.primaryLanguage.color || "#ccc",
+										}}
+									/>
+									<span className="text-muted-foreground">
+										{repository.primaryLanguage.name}
+									</span>
+								</div>
+							)}
+							<div
+								className={cn(
+									"flex items-center gap-1.5 text-muted-foreground",
+								)}
+							>
+								<Star className="h-4 w-4" />
+								<span>{repository.stargazerCount.toLocaleString()} stars</span>
+							</div>
+							<div
+								className={cn(
+									"flex items-center gap-1.5 text-muted-foreground",
+								)}
+							>
+								<GitFork className="h-4 w-4" />
+								<span>{repository.forkCount.toLocaleString()} forks</span>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div className="max-w-6xl mx-auto w-full px-4 py-3 space-y-3">
 				<Card className="gap-2 py-0">
 					<CardContent className="p-0">
 						<ul className="divide-y">
@@ -109,7 +206,7 @@ function RepositoryCodeTab() {
 										<div className="flex items-start gap-3">
 											<img
 												src={commit.author?.avatarUrl}
-												alt={commit.author?.name || ""}
+												alt={commit.author?.user?.login || ""}
 												className="h-8 w-8 rounded-full"
 											/>
 											<div className="flex-1 min-w-0">
@@ -121,9 +218,7 @@ function RepositoryCodeTab() {
 														"mt-1 flex items-center gap-3 text-xs text-muted-foreground",
 													)}
 												>
-													<span>
-														{commit.author?.user?.login || commit.author?.name}
-													</span>
+													<span>{commit.author?.user?.login}</span>
 													<span>•</span>
 													<span>{formatDate(commit.committedDate)}</span>
 													<span>•</span>
@@ -152,7 +247,7 @@ function RepositoryCodeTab() {
 					</div>
 				)}
 			</div>
-		</div>
+		</>
 	);
 }
 

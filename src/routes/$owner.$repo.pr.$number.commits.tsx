@@ -37,7 +37,7 @@ export const Route = createFileRoute("/$owner/$repo/pr/$number/commits")({
 	loader: async ({ params, context: { queryClient } }) => {
 		const prNumber = Number.parseInt(params.number, 10);
 
-		await queryClient.ensureQueryData(
+		await queryClient.fetchQuery(
 			getPullRequestCommitsQueryOptions(params.owner, params.repo, prNumber),
 		);
 	},
@@ -47,16 +47,13 @@ const GET_PULL_REQUEST_COMMITS = gql`
 	query GetPullRequestCommits($owner: String!, $name: String!, $number: Int!) {
 		repository(owner: $owner, name: $name) {
 			pullRequest(number: $number) {
-				id
 				commits(first: 100) {
 					nodes {
 						commit {
-							id
 							oid
 							messageHeadline
 							committedDate
 							author {
-								name
 								user {
 									login
 									avatarUrl
@@ -125,7 +122,7 @@ function PullRequestCommits() {
 				commits.map((commitNode) => {
 					const commit = commitNode.commit;
 					return (
-						<Card key={commit.id} className="transition-all hover:shadow-md">
+						<Card key={commit.oid} className="transition-all hover:shadow-md">
 							<CardContent>
 								<div className="flex items-start gap-4">
 									{commit.author?.user?.avatarUrl && (
@@ -146,11 +143,7 @@ function PullRequestCommits() {
 														"flex items-center gap-3 text-sm text-muted-foreground",
 													)}
 												>
-													<span>
-														{commit.author?.user?.login ||
-															commit.author?.name ||
-															"Unknown"}
-													</span>
+													<span>{commit.author?.user?.login || "Unknown"}</span>
 													<span>•</span>
 													<span>
 														{new Date(commit.committedDate).toLocaleDateString(

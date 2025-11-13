@@ -73,7 +73,11 @@ export function Breadcrumbs() {
 														<Link
 															to={button.to}
 															preload="viewport"
-															activeOptions={{ exact: true }}
+															activeOptions={{
+																exact: true,
+																includeSearch: true,
+															}}
+															search={button.search}
 															activeProps={{
 																className:
 																	"bg-secondary text-secondary-foreground",
@@ -132,6 +136,7 @@ interface BreadcrumbItemData {
 		icon: LucideIcon;
 		badge?: number;
 		iconClassName?: string;
+		search?: Record<string, string>;
 	}[];
 }
 

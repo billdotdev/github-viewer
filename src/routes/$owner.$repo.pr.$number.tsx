@@ -47,7 +47,7 @@ export const Route = createFileRoute("/$owner/$repo/pr/$number")({
 	loader: async ({ params, context: { queryClient } }) => {
 		const prNumber = Number.parseInt(params.number, 10);
 
-		const data = await queryClient.ensureQueryData(
+		const data = await queryClient.fetchQuery(
 			getPullRequestQueryOptions(params.owner, params.repo, prNumber),
 		);
 
@@ -94,7 +94,6 @@ const GET_PULL_REQUEST = gql`
 	query GetPullRequest($owner: String!, $name: String!, $number: Int!) {
 		repository(owner: $owner, name: $name) {
 			pullRequest(number: $number) {
-				id
 				number
 				title
 				state
@@ -109,9 +108,6 @@ const GET_PULL_REQUEST = gql`
 				deletions
 				changedFiles
 				comments {
-					totalCount
-				}
-				reviews {
 					totalCount
 				}
 				commits {

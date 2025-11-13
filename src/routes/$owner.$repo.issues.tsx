@@ -18,11 +18,9 @@ const GET_ISSUES = gql`
 				states: OPEN
 				orderBy: { field: CREATED_AT, direction: DESC }
 			) {
-				totalCount
 				nodes {
 					number
 					title
-					state
 					createdAt
 					author {
 						login
@@ -62,7 +60,7 @@ const getIssuesQueryOptions = (owner: string, repo: string) => {
 export const Route = createFileRoute("/$owner/$repo/issues")({
 	component: RepositoryIssuesTab,
 	loader: async ({ params, context: { queryClient } }) => {
-		await queryClient.ensureQueryData(
+		await queryClient.fetchQuery(
 			getIssuesQueryOptions(params.owner, params.repo),
 		);
 	},
@@ -199,7 +197,7 @@ function RepositoryIssuesTab() {
 																			}}
 																			className="text-xs font-normal"
 																		>
-																			{label?.name}
+																			{label.name}
 																		</Badge>
 																	);
 																})}

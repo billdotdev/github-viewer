@@ -200,7 +200,7 @@ export const Route = createFileRoute("/$owner/$repo/pulls")({
 			queryClient.ensureInfiniteQueryData(
 				getInfinitePullRequestsQueryOptions(owner, repo, deps),
 			),
-			queryClient.ensureQueryData(
+			queryClient.fetchQuery(
 				getPRStateCountsQueryOptions(params.owner, params.repo),
 			),
 		]);
@@ -226,19 +226,22 @@ export const Route = createFileRoute("/$owner/$repo/pulls")({
 						},
 						{
 							label: `${draftCount} Draft`,
-							to: "/$owner/$repo/pulls?state=draft",
+							to: "/$owner/$repo/pulls",
+							search: { state: "draft" },
 							icon: GitPullRequestDraft,
 							iconClassName: prStateTextColorClassNames.DRAFT,
 						},
 						{
 							label: `${countsData.repository?.closed.totalCount} Closed`,
-							to: "/$owner/$repo/pulls?state=closed",
+							to: "/$owner/$repo/pulls",
+							search: { state: "closed" },
 							icon: GitPullRequestClosed,
 							iconClassName: prStateTextColorClassNames.CLOSED,
 						},
 						{
 							label: `${countsData.repository?.merged.totalCount} Merged`,
-							to: "/$owner/$repo/pulls?state=merged",
+							to: "/$owner/$repo/pulls",
+							search: { state: "merged" },
 							icon: GitMerge,
 							iconClassName: prStateTextColorClassNames.MERGED,
 						},

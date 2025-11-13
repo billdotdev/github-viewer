@@ -36737,15 +36737,23 @@ export type UnmarkFileAsViewedMutationVariables = Exact<{
 
 export type UnmarkFileAsViewedMutation = { __typename?: 'Mutation', unmarkFileAsViewed?: { __typename?: 'UnmarkFileAsViewedPayload', clientMutationId?: string | null } | null };
 
+export type GetRepositoryQueryVariables = Exact<{
+  owner: Scalars['String']['input'];
+  name: Scalars['String']['input'];
+}>;
+
+
+export type GetRepositoryQuery = { __typename?: 'Query', repository?: { __typename?: 'Repository', id: string, name: string, stargazerCount: number, forkCount: number, visibility: RepositoryVisibility, primaryLanguage?: { __typename?: 'Language', name: string, color?: string | null } | null } | null };
+
 export type GetRepositoryCodeQueryVariables = Exact<{
   owner: Scalars['String']['input'];
   name: Scalars['String']['input'];
 }>;
 
 
-export type GetRepositoryCodeQuery = { __typename?: 'Query', repository?: { __typename?: 'Repository', defaultBranchRef?: { __typename?: 'Ref', name: string, target?:
+export type GetRepositoryCodeQuery = { __typename?: 'Query', repository?: { __typename?: 'Repository', defaultBranchRef?: { __typename?: 'Ref', target?:
         | { __typename?: 'Blob' }
-        | { __typename?: 'Commit', history: { __typename?: 'CommitHistoryConnection', totalCount: number, nodes?: Array<{ __typename?: 'Commit', oid: any, messageHeadline: string, message: string, committedDate: any, author?: { __typename?: 'GitActor', name?: string | null, email?: string | null, avatarUrl: any, user?: { __typename?: 'User', login: string } | null } | null } | null> | null } }
+        | { __typename?: 'Commit', history: { __typename?: 'CommitHistoryConnection', totalCount: number, nodes?: Array<{ __typename?: 'Commit', oid: any, messageHeadline: string, committedDate: any, author?: { __typename?: 'GitActor', avatarUrl: any, user?: { __typename?: 'User', login: string } | null } | null } | null> | null } }
         | { __typename?: 'Tag' }
         | { __typename?: 'Tree' }
        | null } | null } | null };
@@ -36756,7 +36764,7 @@ export type GetIssuesQueryVariables = Exact<{
 }>;
 
 
-export type GetIssuesQuery = { __typename?: 'Query', repository?: { __typename?: 'Repository', issues: { __typename?: 'IssueConnection', totalCount: number, nodes?: Array<{ __typename?: 'Issue', number: number, title: string, state: IssueState, createdAt: any, author?:
+export type GetIssuesQuery = { __typename?: 'Query', repository?: { __typename?: 'Repository', issues: { __typename?: 'IssueConnection', nodes?: Array<{ __typename?: 'Issue', number: number, title: string, createdAt: any, author?:
           | { __typename?: 'Bot', login: string, avatarUrl: any }
           | { __typename?: 'EnterpriseUserAccount', login: string, avatarUrl: any }
           | { __typename?: 'Mannequin', login: string, avatarUrl: any }
@@ -36771,7 +36779,7 @@ export type GetPullRequestCommitsQueryVariables = Exact<{
 }>;
 
 
-export type GetPullRequestCommitsQuery = { __typename?: 'Query', repository?: { __typename?: 'Repository', pullRequest?: { __typename?: 'PullRequest', id: string, commits: { __typename?: 'PullRequestCommitConnection', nodes?: Array<{ __typename?: 'PullRequestCommit', commit: { __typename?: 'Commit', id: string, oid: any, messageHeadline: string, committedDate: any, additions: number, deletions: number, author?: { __typename?: 'GitActor', name?: string | null, user?: { __typename?: 'User', login: string, avatarUrl: any } | null } | null } } | null> | null } } | null } | null };
+export type GetPullRequestCommitsQuery = { __typename?: 'Query', repository?: { __typename?: 'Repository', pullRequest?: { __typename?: 'PullRequest', commits: { __typename?: 'PullRequestCommitConnection', nodes?: Array<{ __typename?: 'PullRequestCommit', commit: { __typename?: 'Commit', oid: any, messageHeadline: string, committedDate: any, additions: number, deletions: number, author?: { __typename?: 'GitActor', user?: { __typename?: 'User', login: string, avatarUrl: any } | null } | null } } | null> | null } } | null } | null };
 
 export type GetPullRequestFilesQueryVariables = Exact<{
   owner: Scalars['String']['input'];
@@ -36826,13 +36834,13 @@ export type GetPullRequestQueryVariables = Exact<{
 }>;
 
 
-export type GetPullRequestQuery = { __typename?: 'Query', repository?: { __typename?: 'Repository', pullRequest?: { __typename?: 'PullRequest', id: string, number: number, title: string, state: PullRequestState, isDraft: boolean, headRefName: string, baseRefName: string, additions: number, deletions: number, changedFiles: number, author?:
+export type GetPullRequestQuery = { __typename?: 'Query', repository?: { __typename?: 'Repository', pullRequest?: { __typename?: 'PullRequest', number: number, title: string, state: PullRequestState, isDraft: boolean, headRefName: string, baseRefName: string, additions: number, deletions: number, changedFiles: number, author?:
         | { __typename?: 'Bot', login: string, avatarUrl: any }
         | { __typename?: 'EnterpriseUserAccount', login: string, avatarUrl: any }
         | { __typename?: 'Mannequin', login: string, avatarUrl: any }
         | { __typename?: 'Organization', login: string, avatarUrl: any }
         | { __typename?: 'User', login: string, avatarUrl: any }
-       | null, comments: { __typename?: 'IssueCommentConnection', totalCount: number }, reviews?: { __typename?: 'PullRequestReviewConnection', totalCount: number } | null, commits: { __typename?: 'PullRequestCommitConnection', totalCount: number } } | null } | null };
+       | null, comments: { __typename?: 'IssueCommentConnection', totalCount: number }, commits: { __typename?: 'PullRequestCommitConnection', totalCount: number } } | null } | null };
 
 export type GetPullRequestsQueryVariables = Exact<{
   owner: Scalars['String']['input'];
@@ -36860,11 +36868,3 @@ export type GetPrStateCountsQueryVariables = Exact<{
 
 
 export type GetPrStateCountsQuery = { __typename?: 'Query', repository?: { __typename?: 'Repository', open: { __typename?: 'PullRequestConnection', totalCount: number }, openPRsForDraftCount: { __typename?: 'PullRequestConnection', nodes?: Array<{ __typename?: 'PullRequest', isDraft: boolean } | null> | null }, closed: { __typename?: 'PullRequestConnection', totalCount: number }, merged: { __typename?: 'PullRequestConnection', totalCount: number } } | null };
-
-export type GetRepositoryQueryVariables = Exact<{
-  owner: Scalars['String']['input'];
-  name: Scalars['String']['input'];
-}>;
-
-
-export type GetRepositoryQuery = { __typename?: 'Query', repository?: { __typename?: 'Repository', id: string, name: string, stargazerCount: number, forkCount: number, visibility: RepositoryVisibility, primaryLanguage?: { __typename?: 'Language', name: string, color?: string | null } | null, pullRequests: { __typename?: 'PullRequestConnection', totalCount: number }, openIssues: { __typename?: 'IssueConnection', totalCount: number } } | null };

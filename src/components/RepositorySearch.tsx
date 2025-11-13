@@ -4,6 +4,10 @@ import { Search, Star } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import type {
+	SearchRepositoriesQuery,
+	SearchRepositoriesQueryVariables,
+} from "@/generated/graphql";
 import { getGraphQLClient } from "@/lib/graphqlClient";
 import {
 	isPinned,
@@ -12,37 +16,6 @@ import {
 	unpinRepository,
 } from "@/lib/repositoryStorage";
 import { cn } from "@/lib/utils";
-
-interface SearchResult {
-	id: string;
-	name: string;
-	owner: {
-		login: string;
-	};
-	description: string | null;
-	stargazerCount: number;
-	forkCount: number;
-	primaryLanguage: {
-		name: string;
-		color: string;
-	} | null;
-	visibility: string;
-	repositoryTopics: {
-		nodes: Array<{
-			topic: {
-				name: string;
-			};
-		}>;
-	};
-	updatedAt: string;
-	url: string;
-}
-
-interface SearchRepositoriesData {
-	search: {
-		nodes: SearchResult[];
-	};
-}
 
 const SEARCH_REPOSITORIES = gql`
 	query SearchRepositories($query: String!) {
@@ -100,19 +73,24 @@ export function RepositorySearch({
 	const { data, isLoading } = useQuery({
 		queryKey: ["searchRepositories", debouncedQuery],
 		queryFn: async () => {
-			return graphQLClient.request<SearchRepositoriesData>(
-				SEARCH_REPOSITORIES,
-				{
-					query: debouncedQuery,
-				},
-			);
+			return graphQLClient.request<
+				SearchRepositoriesQuery,
+				SearchRepositoriesQueryVariables
+			>(SEARCH_REPOSITORIES, {
+				query: debouncedQuery,
+			});
 		},
 		enabled: debouncedQuery.length >= 2,
 	});
 
 	const repositories = data?.search?.nodes || [];
 
-	const handlePin = (repo: SearchResult) => {
+	const handlePin = (
+		repo: NonNullable<SearchRepositoriesQuery["search"]["nodes"]>[number],
+	) => {
+		if (repo?.__typename !== "Repository") {
+			return;
+		}
 		const owner = repo.owner.login;
 		const name = repo.name;
 
@@ -122,13 +100,16 @@ export function RepositorySearch({
 			const pinnedRepo: PinnedRepository = {
 				owner,
 				name,
-				description: repo.description,
+				description: repo.description || null,
 				language: repo.primaryLanguage?.name || null,
 				languageColor: repo.primaryLanguage?.color || null,
 				stargazerCount: repo.stargazerCount,
 				forkCount: repo.forkCount,
 				visibility: repo.visibility,
-				topics: repo.repositoryTopics.nodes.map((n) => n.topic.name),
+				topics:
+					repo.repositoryTopics.nodes
+						?.map((n) => n?.topic.name || "")
+						.filter(Boolean) || [],
 				updatedAt: repo.updatedAt,
 				url: repo.url,
 			};
@@ -173,6 +154,9 @@ export function RepositorySearch({
 					) : (
 						<ul className="max-h-96 overflow-y-auto">
 							{repositories.map((repo) => {
+								if (repo?.__typename !== "Repository") {
+									return null;
+								}
 								const owner = repo.owner.login;
 								const name = repo.name;
 								const pinned = isPinned(owner, name);
