@@ -2,7 +2,6 @@ import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { gql } from "graphql-request";
 import { CircleDot, MessageSquare } from "lucide-react";
-import { createCrumb } from "@/components/Breadcrumbs";
 import { Badge } from "@/components/ui/badge";
 import type {
 	GetIssuesQuery,
@@ -66,15 +65,6 @@ export const Route = createFileRoute("/$owner/$repo/issues")({
 		await queryClient.ensureQueryData(
 			getIssuesQueryOptions(params.owner, params.repo),
 		);
-
-		return {
-			crumbs: [
-				createCrumb({
-					label: "Issues",
-					icon: CircleDot,
-				}),
-			],
-		};
 	},
 });
 

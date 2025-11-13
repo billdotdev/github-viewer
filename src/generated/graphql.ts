@@ -22491,6 +22491,12 @@ export type PullRequestParameters = {
   requiredApprovingReviewCount: Scalars['Int']['output'];
   /** All conversations on code must be resolved before a pull request can be merged. */
   requiredReviewThreadResolution: Scalars['Boolean']['output'];
+  /**
+   * This field is in beta and subject to change. A collection of reviewers and
+   * associated file patterns. Each reviewer has a list of file patterns which
+   * determine the files that reviewer is required to review.
+   */
+  requiredReviewers?: Maybe<Array<RequiredReviewerConfiguration>>;
 };
 
 /** Require all commits be made to a non-target branch and submitted via a pull request before they can be merged. */
@@ -22512,6 +22518,12 @@ export type PullRequestParametersInput = {
   requiredApprovingReviewCount: Scalars['Int']['input'];
   /** All conversations on code must be resolved before a pull request can be merged. */
   requiredReviewThreadResolution: Scalars['Boolean']['input'];
+  /**
+   * This argument is in beta and subject to change. A collection of reviewers and
+   * associated file patterns. Each reviewer has a list of file patterns which
+   * determine the files that reviewer is required to review.
+   */
+  requiredReviewers?: InputMaybe<Array<RequiredReviewerConfigurationInput>>;
 };
 
 /** A review object for a given pull request. */
@@ -28889,6 +28901,39 @@ export type RequiredDeploymentsParameters = {
 export type RequiredDeploymentsParametersInput = {
   /** The environments that must be successfully deployed to before branches can be merged. */
   requiredDeploymentEnvironments: Array<Scalars['String']['input']>;
+};
+
+/** A reviewing team, and file patterns describing which files they must approve changes to. */
+export type RequiredReviewerConfiguration = {
+  __typename?: 'RequiredReviewerConfiguration';
+  /**
+   * Array of file patterns. Pull requests which change matching files must be
+   * approved by the specified team. File patterns use fnmatch syntax.
+   */
+  filePatterns: Array<Scalars['String']['output']>;
+  /**
+   * Minimum number of approvals required from the specified team. If set to zero,
+   * the team will be added to the pull request but approval is optional.
+   */
+  minimumApprovals: Scalars['Int']['output'];
+  /** Node ID of the team which must review changes to matching files. */
+  reviewerId: Scalars['ID']['output'];
+};
+
+/** A reviewing team, and file patterns describing which files they must approve changes to. */
+export type RequiredReviewerConfigurationInput = {
+  /**
+   * Array of file patterns. Pull requests which change matching files must be
+   * approved by the specified team. File patterns use fnmatch syntax.
+   */
+  filePatterns: Array<Scalars['String']['input']>;
+  /**
+   * Minimum number of approvals required from the specified team. If set to zero,
+   * the team will be added to the pull request but approval is optional.
+   */
+  minimumApprovals: Scalars['Int']['input'];
+  /** Node ID of the team which must review changes to matching files. */
+  reviewerId: Scalars['ID']['input'];
 };
 
 /** Represents a required status check for a protected branch, but not any specific run of that check. */
@@ -36781,7 +36826,7 @@ export type GetPullRequestQueryVariables = Exact<{
 }>;
 
 
-export type GetPullRequestQuery = { __typename?: 'Query', repository?: { __typename?: 'Repository', pullRequest?: { __typename?: 'PullRequest', id: string, number: number, title: string, state: PullRequestState, headRefName: string, baseRefName: string, additions: number, deletions: number, changedFiles: number, author?:
+export type GetPullRequestQuery = { __typename?: 'Query', repository?: { __typename?: 'Repository', pullRequest?: { __typename?: 'PullRequest', id: string, number: number, title: string, state: PullRequestState, isDraft: boolean, headRefName: string, baseRefName: string, additions: number, deletions: number, changedFiles: number, author?:
         | { __typename?: 'Bot', login: string, avatarUrl: any }
         | { __typename?: 'EnterpriseUserAccount', login: string, avatarUrl: any }
         | { __typename?: 'Mannequin', login: string, avatarUrl: any }
@@ -36801,11 +36846,11 @@ export type GetPullRequestsQueryVariables = Exact<{
 
 
 export type GetPullRequestsQuery = { __typename?: 'Query', repository?: { __typename?: 'Repository', pullRequests: { __typename?: 'PullRequestConnection', totalCount: number, pageInfo: { __typename?: 'PageInfo', hasNextPage: boolean, hasPreviousPage: boolean, endCursor?: string | null, startCursor?: string | null }, nodes?: Array<{ __typename?: 'PullRequest', number: number, title: string, state: PullRequestState, isDraft: boolean, createdAt: any, author?:
-          | { __typename?: 'Bot', login: string, avatarUrl: any }
-          | { __typename?: 'EnterpriseUserAccount', login: string, avatarUrl: any }
-          | { __typename?: 'Mannequin', login: string, avatarUrl: any }
-          | { __typename?: 'Organization', login: string, avatarUrl: any }
-          | { __typename?: 'User', login: string, avatarUrl: any }
+          | { __typename?: 'Bot', login: string }
+          | { __typename?: 'EnterpriseUserAccount', login: string }
+          | { __typename?: 'Mannequin', login: string }
+          | { __typename?: 'Organization', login: string }
+          | { __typename?: 'User', login: string }
          | null, comments: { __typename?: 'IssueCommentConnection', totalCount: number }, labels?: { __typename?: 'LabelConnection', nodes?: Array<{ __typename?: 'Label', id: string, name: string, color: string } | null> | null } | null } | null> | null } } | null };
 
 export type GetPrStateCountsQueryVariables = Exact<{
@@ -36822,7 +36867,4 @@ export type GetRepositoryQueryVariables = Exact<{
 }>;
 
 
-export type GetRepositoryQuery = { __typename?: 'Query', repository?: { __typename?: 'Repository', id: string, name: string, description?: string | null, stargazerCount: number, forkCount: number, visibility: RepositoryVisibility, owner:
-      | { __typename?: 'Organization', login: string }
-      | { __typename?: 'User', login: string }
-    , primaryLanguage?: { __typename?: 'Language', name: string, color?: string | null } | null, repositoryTopics: { __typename?: 'RepositoryTopicConnection', nodes?: Array<{ __typename?: 'RepositoryTopic', topic: { __typename?: 'Topic', name: string } } | null> | null }, defaultBranchRef?: { __typename?: 'Ref', name: string } | null, pullRequests: { __typename?: 'PullRequestConnection', totalCount: number }, openIssues: { __typename?: 'IssueConnection', totalCount: number } } | null };
+export type GetRepositoryQuery = { __typename?: 'Query', repository?: { __typename?: 'Repository', id: string, name: string, stargazerCount: number, forkCount: number, visibility: RepositoryVisibility, primaryLanguage?: { __typename?: 'Language', name: string, color?: string | null } | null, pullRequests: { __typename?: 'PullRequestConnection', totalCount: number }, openIssues: { __typename?: 'IssueConnection', totalCount: number } } | null };

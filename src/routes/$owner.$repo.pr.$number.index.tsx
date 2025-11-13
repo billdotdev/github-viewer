@@ -166,7 +166,7 @@ function PullRequestConversation() {
 	);
 
 	return (
-		<div className={cn("space-y-3 mx-auto w-full max-w-5xl pt-3")}>
+		<div className={cn("space-y-3 mx-auto w-full max-w-4xl pt-3")}>
 			{pr.bodyHTML && (
 				<Card>
 					<CardContent>

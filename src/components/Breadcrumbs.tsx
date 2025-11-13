@@ -10,6 +10,8 @@ import {
 	BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { cn } from "@/lib/utils";
+import { Badge } from "./ui/badge";
+import { Button } from "./ui/button";
 
 export function Breadcrumbs() {
 	const matches = useMatches();
@@ -22,11 +24,7 @@ export function Breadcrumbs() {
 	if (items.length === 0) return null;
 
 	return (
-		<header
-			className={cn(
-				"sticky top-0 z-20 flex h-6 shrink-0 items-center gap-2 border-b bg-background px-4",
-			)}
-		>
+		<header className="sticky top-0 z-20 flex h-10 shrink-0 items-center gap-2 border-b bg-background px-4">
 			<Breadcrumb>
 				<BreadcrumbList>
 					{items.map((item, index) => {
@@ -35,8 +33,8 @@ export function Breadcrumbs() {
 						const Icon = item && "icon" in item ? item.icon : undefined;
 
 						const content: ReactNode = Icon ? (
-							<span className={cn("flex items-center gap-1 justify-center")}>
-								<Icon className={cn("h-3 w-3 shrink-0")} />
+							<span className="flex items-center gap-1 justify-center">
+								<Icon className="h-4 w-4 shrink-0" />
 								<span>{item.label}</span>
 							</span>
 						) : (
@@ -61,7 +59,57 @@ export function Breadcrumbs() {
 											</Link>
 										</BreadcrumbLink>
 									)}
+									{item.buttons && (
+										<div className="flex items-center gap-2 pl-1">
+											{item.buttons.map((button) => {
+												return (
+													<Button
+														key={button.label}
+														variant="outline"
+														className="h-6 group"
+														size="sm"
+														asChild
+													>
+														<Link
+															to={button.to}
+															preload="viewport"
+															activeOptions={{ exact: true }}
+															activeProps={{
+																className:
+																	"bg-secondary text-secondary-foreground",
+															}}
+														>
+															{({ isActive }) => (
+																<>
+																	<button.icon
+																		className={cn(
+																			"h-3 w-3 shrink-0",
+																			button.iconClassName,
+																		)}
+																	/>
+																	<span>{button.label}</span>
+
+																	{button.badge && (
+																		<Badge
+																			variant="secondary"
+																			className={cn(
+																				"text-xs px-1 py-0 group-hover:bg-primary/10",
+																				isActive && "bg-primary/10",
+																			)}
+																		>
+																			{button.badge}
+																		</Badge>
+																	)}
+																</>
+															)}
+														</Link>
+													</Button>
+												);
+											})}
+										</div>
+									)}
 								</BreadcrumbItem>
+
 								{!isLast && <BreadcrumbSeparator />}
 							</Fragment>
 						);
@@ -78,6 +126,13 @@ interface BreadcrumbItemData {
 	params?: Record<string, string>;
 	icon?: LucideIcon;
 	className?: string;
+	buttons?: {
+		label: string;
+		to: string;
+		icon: LucideIcon;
+		badge?: number;
+		iconClassName?: string;
+	}[];
 }
 
 export function createCrumb(crumb: BreadcrumbItemData) {

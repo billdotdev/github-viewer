@@ -36,8 +36,6 @@ export function useDiffData(
 			}
 		},
 		enabled,
-		staleTime: 5 * 60 * 1000,
-		gcTime: 10 * 60 * 1000,
 	});
 }
 
@@ -63,7 +61,5 @@ export function useFullPRDiff(
 			}
 		},
 		enabled,
-		staleTime: 5 * 60 * 1000,
-		gcTime: 10 * 60 * 1000,
 	});
 }

@@ -1,10 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import {
-	createFileRoute,
-	Link,
-	Outlet,
-	useRouterState,
-} from "@tanstack/react-router";
+import { createFileRoute, Outlet } from "@tanstack/react-router";
 import { gql } from "graphql-request";
 import {
 	CheckCircle2,
@@ -19,7 +14,6 @@ import {
 } from "lucide-react";
 import { createCrumb } from "@/components/Breadcrumbs";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import type {
 	GetPullRequestQuery,
 	GetPullRequestQueryVariables,
@@ -53,7 +47,7 @@ export const Route = createFileRoute("/$owner/$repo/pr/$number")({
 	loader: async ({ params, context: { queryClient } }) => {
 		const prNumber = Number.parseInt(params.number, 10);
 
-		await queryClient.ensureQueryData(
+		const data = await queryClient.ensureQueryData(
 			getPullRequestQueryOptions(params.owner, params.repo, prNumber),
 		);
 
@@ -63,14 +57,33 @@ export const Route = createFileRoute("/$owner/$repo/pr/$number")({
 					label: "Pull Requests",
 					to: "/$owner/$repo/pulls",
 					params,
-					className: cn("text-xs"),
 					icon: GitPullRequest,
 				}),
 				createCrumb({
 					label: `#${params.number}`,
 					to: "/$owner/$repo/pr/$number",
 					params,
-					className: cn("font-mono text-xs"),
+					className: "font-mono",
+					buttons: [
+						{
+							label: "Conversation",
+							to: "/$owner/$repo/pr/$number",
+							icon: MessageSquare,
+							badge: data.repository?.pullRequest?.comments.totalCount,
+						},
+						{
+							label: "Commits",
+							to: "/$owner/$repo/pr/$number/commits",
+							icon: GitCommit,
+							badge: data.repository?.pullRequest?.commits.totalCount,
+						},
+						{
+							label: "Files",
+							to: "/$owner/$repo/pr/$number/files",
+							icon: FileDiff,
+							badge: data.repository?.pullRequest?.changedFiles,
+						},
+					],
 				}),
 			],
 		};
@@ -85,6 +98,7 @@ const GET_PULL_REQUEST = gql`
 				number
 				title
 				state
+				isDraft
 				headRefName
 				baseRefName
 				author {
@@ -94,13 +108,13 @@ const GET_PULL_REQUEST = gql`
 				additions
 				deletions
 				changedFiles
-				comments(first: 1) {
+				comments {
 					totalCount
 				}
-				reviews(first: 1) {
+				reviews {
 					totalCount
 				}
-				commits(first: 1) {
+				commits {
 					totalCount
 				}
 			}
@@ -111,13 +125,6 @@ const GET_PULL_REQUEST = gql`
 function PullRequestLayout() {
 	const { owner, repo, number } = Route.useParams();
 	const prNumber = Number.parseInt(number, 10);
-
-	const pathname = useRouterState({
-		select: (s) => s.location.pathname,
-	});
-	const isCommitsActive = pathname.endsWith("/commits");
-	const isFilesActive = pathname.endsWith("/files");
-	const isConversationActive = !isCommitsActive && !isFilesActive;
 
 	const { data: prData } = useQuery(
 		getPullRequestQueryOptions(owner, repo, prNumber),
@@ -143,85 +150,107 @@ function PullRequestLayout() {
 		if (pr.state === "MERGED") {
 			return "Merged";
 		}
+		if (pr.isDraft) {
+			return "Draft";
+		}
 		if (pr.state === "CLOSED") {
 			return "Closed";
 		}
 		return "Open";
 	};
 
-	const commentsCount =
-		(pr.comments.totalCount || 0) + (pr.reviews?.totalCount || 0);
-
 	return (
 		<div className={cn("flex flex-1 flex-col overflow-hidden")}>
 			<div className={cn("bg-card shrink-0 w-full")}>
-				<div className={cn("max-w-5xl mx-auto px-4 py-3")}>
+				<div className={cn("max-w-4xl mx-auto pt-3")}>
 					<div className={cn("flex items-start gap-4")}>
 						<div className={cn("flex-1 min-w-0")}>
 							<div className={cn("mb-2 flex items-center gap-2")}>
-								<h1 className={cn("text-xl font-bold tracking-tight")}>
+								<h1 className={cn("text-xl font-semibold tracking-tight")}>
 									{pr.title}
 								</h1>
 								<Badge variant="outline">#{pr.number}</Badge>
 							</div>
 
-							<div className={cn("flex flex-wrap items-center gap-3 text-sm")}>
-								<Badge
-									variant={
-										pr.state === "MERGED"
-											? "default"
-											: pr.state === "CLOSED"
-												? "destructive"
-												: "default"
-									}
-									className={cn(
-										"gap-1",
-										pr.state === "MERGED"
-											? "bg-purple-600"
-											: pr.state === "OPEN"
-												? "bg-green-600"
-												: "",
-									)}
-								>
-									{getStateIcon()}
-									<span>{getStateText()}</span>
-								</Badge>
-
+							<div className="flex items-center justify-between">
 								<div
-									className={cn(
-										"flex items-center gap-2 text-muted-foreground",
-									)}
+									className={cn("flex flex-wrap items-center gap-3 text-sm")}
 								>
-									{pr.author?.avatarUrl && (
-										<img
-											src={pr.author.avatarUrl}
-											alt={pr.author.login}
-											className={cn("h-4 w-4 rounded-full")}
-										/>
-									)}
-									<span>
-										<span className={cn("font-medium")}>
-											{pr.author?.login}
-										</span>{" "}
-										wants to merge
-									</span>
+									<Badge
+										variant={
+											pr.state === "MERGED"
+												? "default"
+												: pr.state === "CLOSED"
+													? "destructive"
+													: "default"
+										}
+										className={cn(
+											"gap-1",
+											pr.state === "MERGED" && "bg-purple-600",
+											pr.state === "OPEN" && "bg-green-600",
+										)}
+									>
+										{getStateIcon()}
+										<span>{getStateText()}</span>
+									</Badge>
+
+									<div
+										className={cn(
+											"flex items-center gap-2 text-muted-foreground",
+										)}
+									>
+										{pr.author?.avatarUrl && (
+											<img
+												src={pr.author.avatarUrl}
+												alt={pr.author.login}
+												className="h-5 w-5 rounded-full"
+											/>
+										)}
+										<span>
+											<span className={cn("font-medium")}>
+												{pr.author?.login}
+											</span>{" "}
+											wants to merge
+										</span>
+									</div>
+
+									<div className="flex items-center gap-2">
+										<GitBranch className="h-4 w-4 text-muted-foreground" />
+										<Badge variant="secondary" className="font-mono text-xs">
+											{pr.baseRefName}
+										</Badge>
+										<span className="text-muted-foreground">←</span>
+										<Badge variant="secondary" className="font-mono text-xs">
+											{pr.headRefName}
+										</Badge>
+									</div>
 								</div>
 
-								<div className={cn("flex items-center gap-2")}>
-									<GitBranch className={cn("h-4 w-4 text-muted-foreground")} />
-									<Badge
-										variant="secondary"
-										className={cn("font-mono text-xs")}
-									>
-										{pr.baseRefName}
-									</Badge>
-									<span className={cn("text-muted-foreground")}>←</span>
-									<Badge
-										variant="secondary"
-										className={cn("font-mono text-xs")}
-									>
-										{pr.headRefName}
-									</Badge>
+								<div className="flex flex-wrap items-center justify-end gap-2 text-sm">
+									<div className="flex items-center gap-1">
+										<CheckCircle2 className="h-4 w-4 text-green-600" />
+										<span className="text-muted-foreground">
+											<span className="font-medium text-green-600">
+												+{pr.additions}
+											</span>{" "}
+											additions
+										</span>
+									</div>
+									<div className="flex items-center gap-1">
+										<XCircle className="h-4 w-4 text-red-600" />
+										<span className="text-muted-foreground">
+											<span className="font-medium text-red-600">
+												-{pr.deletions}
+											</span>{" "}
+											deletions
+										</span>
+									</div>
+									<div className="flex items-center gap-1 text-muted-foreground">
+										<span>
+											<span className="font-medium">{pr.changedFiles}</span>{" "}
+											files changed
+										</span>
+									</div>
 								</div>
 							</div>
 						</div>
@@ -229,107 +258,7 @@ function PullRequestLayout() {
 				</div>
 			</div>
 
-			<div className={cn("flex flex-1 flex-col overflow-hidden")}>
-				<div
-					className={cn(
-						"shrink-0 flex items-center justify-between max-w-5xl w-full mx-auto px-4",
-					)}
-				>
-					<div className={cn("flex gap-1")}>
-						<Button
-							asChild
-							variant="ghost"
-							size="sm"
-							className={cn(
-								"gap-2 rounded-b-none border-b-2",
-								isConversationActive ? "border-primary" : "border-transparent",
-							)}
-						>
-							<Link
-								to="/$owner/$repo/pr/$number"
-								params={{ owner, repo, number }}
-							>
-								<MessageSquare className={cn("h-4 w-4")} />
-								<span>Conversation</span>
-								<Badge variant="secondary" className={cn("text-xs")}>
-									{commentsCount}
-								</Badge>
-							</Link>
-						</Button>
-						<Button
-							asChild
-							variant="ghost"
-							size="sm"
-							className={cn(
-								"gap-2 rounded-b-none border-b-2",
-								isCommitsActive ? "border-primary" : "border-transparent",
-							)}
-						>
-							<Link
-								to="/$owner/$repo/pr/$number/commits"
-								params={{ owner, repo, number }}
-							>
-								<GitCommit className={cn("h-4 w-4")} />
-								<span>Commits</span>
-								<Badge variant="secondary" className={cn("text-xs")}>
-									{pr.commits.totalCount}
-								</Badge>
-							</Link>
-						</Button>
-						<Button
-							asChild
-							variant="ghost"
-							size="sm"
-							className={cn(
-								"gap-2 rounded-b-none border-b-2",
-								isFilesActive ? "border-primary" : "border-transparent",
-							)}
-						>
-							<Link
-								to="/$owner/$repo/pr/$number/files"
-								params={{ owner, repo, number }}
-							>
-								<FileDiff className={cn("h-4 w-4")} />
-								<span>Files Changed</span>
-								<Badge variant="secondary" className={cn("text-xs")}>
-									{pr.changedFiles}
-								</Badge>
-							</Link>
-						</Button>
-					</div>
-
-					<div className={cn("flex flex-wrap items-center gap-4 text-sm")}>
-						<div className={cn("flex items-center gap-2")}>
-							<CheckCircle2 className={cn("h-4 w-4 text-green-600")} />
-							<span className={cn("text-muted-foreground")}>
-								<span className={cn("font-medium text-green-600")}>
-									+{pr.additions}
-								</span>{" "}
-								additions
-							</span>
-						</div>
-						<div className={cn("flex items-center gap-2")}>
-							<XCircle className={cn("h-4 w-4 text-red-600")} />
-							<span className={cn("text-muted-foreground")}>
-								<span className={cn("font-medium text-red-600")}>
-									-{pr.deletions}
-								</span>{" "}
-								deletions
-							</span>
-						</div>
-						<div
-							className={cn("flex items-center gap-2 text-muted-foreground")}
-						>
-							<span>
-								<span className={cn("font-medium")}>{pr.changedFiles}</span>{" "}
-								files changed
-							</span>
-						</div>
-					</div>
-				</div>
-
-				<Outlet />
-			</div>
+			<Outlet />
 		</div>
 	);
 }
