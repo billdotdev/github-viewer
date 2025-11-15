@@ -1,6 +1,5 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { gql } from "graphql-request";
 import {
 	Circle,
 	GitMerge,
@@ -24,163 +23,13 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
+import { getPRStateCountsQueryOptions } from "@/data/GetPRStateCounts";
 import {
-	type GetPrStateCountsQuery,
-	type GetPrStateCountsQueryVariables,
-	type GetPullRequestsQuery,
-	type GetPullRequestsQueryVariables,
-	PullRequestState,
-} from "@/generated/graphql";
-import { getGraphQLClient } from "@/lib/graphqlClient";
+	getInfinitePullRequestsQueryOptions,
+	type PRSearchParams,
+	type PRStateFilter,
+} from "@/data/GetPullRequests";
 import { cn } from "@/lib/utils";
-
-const GET_PULL_REQUESTS = gql`
-	query GetPullRequests(
-		$owner: String!
-		$name: String!
-		$states: [PullRequestState!]
-		$first: Int!
-		$after: String
-		$before: String
-		$last: Int
-	) {
-		repository(owner: $owner, name: $name) {
-			pullRequests(
-				states: $states
-				first: $first
-				after: $after
-				before: $before
-				last: $last
-				orderBy: { field: CREATED_AT, direction: DESC }
-			) {
-				totalCount
-				pageInfo {
-					hasNextPage
-					hasPreviousPage
-					endCursor
-					startCursor
-				}
-				nodes {
-					number
-					title
-					state
-					isDraft
-					createdAt
-					author {
-						login
-					}
-					comments {
-						totalCount
-					}
-					labels(first: 10) {
-						nodes {
-							id
-							name
-							color
-						}
-					}
-				}
-			}
-		}
-	}
-`;
-
-const GET_PR_STATE_COUNTS = gql`
-	query GetPRStateCounts($owner: String!, $name: String!) {
-		repository(owner: $owner, name: $name) {
-			open: pullRequests(states: [OPEN]) {
-				totalCount
-			}
-			openPRsForDraftCount: pullRequests(states: [OPEN], first: 100) {
-				nodes {
-					isDraft
-				}
-			}
-			closed: pullRequests(states: [CLOSED]) {
-				totalCount
-			}
-			merged: pullRequests(states: [MERGED]) {
-				totalCount
-			}
-		}
-	}
-`;
-
-type PRStateFilter = "open" | "draft" | "closed" | "merged";
-
-interface PRSearchParams {
-	state?: PRStateFilter;
-	author?: string;
-	search?: string;
-	label?: string;
-}
-
-const getInfinitePullRequestsQueryOptions = (
-	owner: string,
-	repo: string,
-	filters: PRSearchParams,
-) => {
-	const graphQLClient = getGraphQLClient();
-
-	let states: PullRequestState[] = [PullRequestState.Open];
-	if (filters.state === "closed") {
-		states = [PullRequestState.Closed];
-	} else if (filters.state === "merged") {
-		states = [PullRequestState.Merged];
-	} else if (filters.state === "open" || filters.state === "draft") {
-		states = [PullRequestState.Open];
-	}
-
-	return {
-		queryKey: [
-			"repositoryPullRequestsInfinite",
-			owner,
-			repo,
-			filters.state,
-			filters.author,
-			filters.search,
-			filters.label,
-		],
-		queryFn: async ({ pageParam }: { pageParam?: string }) => {
-			return graphQLClient.request<
-				GetPullRequestsQuery,
-				GetPullRequestsQueryVariables
-			>(GET_PULL_REQUESTS, {
-				owner,
-				name: repo,
-				states,
-				first: 30,
-				after: pageParam,
-				before: undefined,
-				last: undefined,
-			});
-		},
-		getNextPageParam: (lastPage: GetPullRequestsQuery) => {
-			const pageInfo = lastPage?.repository?.pullRequests?.pageInfo;
-			if (pageInfo?.hasNextPage && pageInfo?.endCursor) {
-				return pageInfo.endCursor;
-			}
-			return undefined;
-		},
-		initialPageParam: undefined,
-	};
-};
-
-const getPRStateCountsQueryOptions = (owner: string, repo: string) => {
-	const graphQLClient = getGraphQLClient();
-	return {
-		queryKey: ["prStateCounts", owner, repo],
-		queryFn: async () => {
-			return graphQLClient.request<
-				GetPrStateCountsQuery,
-				GetPrStateCountsQueryVariables
-			>(GET_PR_STATE_COUNTS, {
-				owner,
-				name: repo,
-			});
-		},
-	};
-};
 
 export const Route = createFileRoute("/$owner/$repo/pulls")({
 	component: RepositoryPullRequestsTab,
@@ -195,21 +44,16 @@ export const Route = createFileRoute("/$owner/$repo/pulls")({
 	loaderDeps: ({ search }) => search,
 	loader: async ({ params, context: { queryClient }, deps }) => {
 		const { owner, repo } = params;
-
-		const [_, countsData] = await Promise.all([
-			queryClient.fetchInfiniteQuery(
-				getInfinitePullRequestsQueryOptions(owner, repo, deps),
-			),
-			queryClient.fetchQuery(
-				getPRStateCountsQueryOptions(params.owner, params.repo),
-			),
-		]);
-
+		queryClient.fetchInfiniteQuery(
+			getInfinitePullRequestsQueryOptions(owner, repo, deps),
+		);
+		const countsData = await queryClient.fetchQuery(
+			getPRStateCountsQueryOptions(params.owner, params.repo),
+		);
 		const draftCount =
 			countsData.repository?.openPRsForDraftCount?.nodes?.filter(
 				(pr) => pr?.isDraft,
 			).length || 0;
-
 		return {
 			crumbs: [
 				createCrumb({
@@ -256,12 +100,10 @@ function RepositoryPullRequestsTab() {
 	const { owner, repo } = Route.useParams();
 	const navigate = useNavigate({ from: "/$owner/$repo/pulls" });
 	const searchParams = Route.useSearch();
-
 	const [localSearch, setLocalSearch] = useState(searchParams.search || "");
 	const [debouncedSearch, setDebouncedSearch] = useState(
 		searchParams.search || "",
 	);
-
 	const loadMoreRef = useRef<HTMLDivElement>(null);
 
 	const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } =
@@ -463,7 +305,7 @@ function RepositoryPullRequestsTab() {
 								return (
 									<li key={pr.number}>
 										<Link
-											to="/$owner/$repo/pr/$number"
+											to="/$owner/$repo/pull/$number"
 											preload={index < 5 ? "viewport" : "intent"}
 											params={{
 												owner,

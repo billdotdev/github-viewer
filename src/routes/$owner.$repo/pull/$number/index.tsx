@@ -1,66 +1,17 @@
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import DOMPurify from "dompurify";
-import { gql } from "graphql-request";
 import { MessageSquare } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import type {
-	GetPullRequestBodyQuery,
-	GetPullRequestBodyQueryVariables,
-	GetPullRequestCommentsQuery,
-	GetPullRequestCommentsQueryVariables,
-} from "@/generated/graphql";
-import { getGraphQLClient } from "@/lib/graphqlClient";
+import { getPullRequestBodyQueryOptions } from "@/data/GetPullRequestBody";
+import { getPullRequestCommentsQueryOptions } from "@/data/GetPullRequestComments";
+import { sanitizeHTML } from "@/lib/html";
 import { cn } from "@/lib/utils";
 
-const getPullRequestBodyQueryOptions = (
-	owner: string,
-	repo: string,
-	prNumber: number,
-) => {
-	const graphQLClient = getGraphQLClient();
-	return {
-		queryKey: ["pullRequestBody", owner, repo, prNumber],
-		queryFn: async () => {
-			return graphQLClient.request<
-				GetPullRequestBodyQuery,
-				GetPullRequestBodyQueryVariables
-			>(GET_PULL_REQUEST_BODY, {
-				owner,
-				name: repo,
-				number: prNumber,
-			});
-		},
-	};
-};
-
-const getPullRequestCommentsQueryOptions = (
-	owner: string,
-	repo: string,
-	prNumber: number,
-) => {
-	const graphQLClient = getGraphQLClient();
-	return {
-		queryKey: ["pullRequestComments", owner, repo, prNumber],
-		queryFn: async () => {
-			return graphQLClient.request<
-				GetPullRequestCommentsQuery,
-				GetPullRequestCommentsQueryVariables
-			>(GET_PULL_REQUEST_COMMENTS, {
-				owner,
-				name: repo,
-				number: prNumber,
-			});
-		},
-	};
-};
-
-export const Route = createFileRoute("/$owner/$repo/pr/$number/")({
+export const Route = createFileRoute("/$owner/$repo/pull/$number/")({
 	component: PullRequestConversation,
 	loader: async ({ params, context: { queryClient } }) => {
 		const prNumber = Number.parseInt(params.number, 10);
-
 		await Promise.all([
 			queryClient.fetchQuery(
 				getPullRequestBodyQueryOptions(params.owner, params.repo, prNumber),
@@ -72,71 +23,12 @@ export const Route = createFileRoute("/$owner/$repo/pr/$number/")({
 	},
 });
 
-const sanitizeHTML = (html: string) => {
-	return DOMPurify.sanitize(html);
-};
-
-const GET_PULL_REQUEST_BODY = gql`
-	query GetPullRequestBody($owner: String!, $name: String!, $number: Int!) {
-		repository(owner: $owner, name: $name) {
-			pullRequest(number: $number) {
-				id
-				bodyHTML
-				createdAt
-				author {
-					login
-					avatarUrl
-				}
-			}
-		}
-	}
-`;
-
-const GET_PULL_REQUEST_COMMENTS = gql`
-	query GetPullRequestComments(
-		$owner: String!
-		$name: String!
-		$number: Int!
-	) {
-		repository(owner: $owner, name: $name) {
-			pullRequest(number: $number) {
-				id
-				comments(first: 100) {
-					nodes {
-						id
-						bodyHTML
-						createdAt
-						author {
-							login
-							avatarUrl
-						}
-					}
-				}
-				reviews(first: 100) {
-					nodes {
-						id
-						bodyHTML
-						state
-						createdAt
-						author {
-							login
-							avatarUrl
-						}
-					}
-				}
-			}
-		}
-	}
-`;
-
 function PullRequestConversation() {
 	const { owner, repo, number } = Route.useParams();
 	const prNumber = Number.parseInt(number, 10);
-
 	const { data: prData } = useQuery(
 		getPullRequestBodyQueryOptions(owner, repo, prNumber),
 	);
-
 	const {
 		data: commentsData,
 		isLoading: isCommentsLoading,

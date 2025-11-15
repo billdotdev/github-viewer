@@ -1,3 +1,4 @@
+import { useNavigate } from "@tanstack/react-router";
 import { Eye, EyeOff, Key, Loader2 } from "lucide-react";
 import { useId, useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -17,6 +18,7 @@ export function TokenPrompt() {
 	const [isValidating, setIsValidating] = useState(false);
 	const [error, setError] = useState<string | null>(null);
 	const [showToken, setShowToken] = useState(false);
+	const navigate = useNavigate();
 
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
@@ -46,8 +48,7 @@ export function TokenPrompt() {
 			}
 
 			await saveToken(token);
-			setToken("");
-			window.location.reload();
+			navigate({ to: "/" });
 		} catch (err) {
 			setError(err instanceof Error ? err.message : "Failed to save token");
 			setIsValidating(false);

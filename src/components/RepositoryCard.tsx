@@ -74,9 +74,8 @@ export function RepositoryCard({ repository, onUnpin }: RepositoryCardProps) {
 				to="/$owner/$repo/pulls"
 				preload="viewport"
 				params={{ owner, repo: name }}
-				className="block"
 			>
-				<CardHeader className="pb-3">
+				<CardHeader>
 					<div className="flex items-start justify-between gap-3">
 						<div className="min-w-0 flex-1">
 							<div className="flex items-center gap-2 flex-wrap">
@@ -101,7 +100,7 @@ export function RepositoryCard({ repository, onUnpin }: RepositoryCardProps) {
 							)}
 						</div>
 						<Button
-							variant={pinned ? "default" : "ghost"}
+							variant={pinned ? "outline" : "ghost"}
 							size="icon"
 							onClick={handleTogglePin}
 							className="shrink-0"
@@ -111,7 +110,7 @@ export function RepositoryCard({ repository, onUnpin }: RepositoryCardProps) {
 					</div>
 				</CardHeader>
 				<CardContent>
-					<div className="flex flex-wrap items-center gap-4 text-sm">
+					<div className="flex flex-wrap items-center gap-2 text-sm">
 						{language && (
 							<div className="flex items-center gap-1.5">
 								<span
@@ -132,20 +131,20 @@ export function RepositoryCard({ repository, onUnpin }: RepositoryCardProps) {
 						<span className="text-muted-foreground text-xs">
 							Updated {getRelativeTime()}
 						</span>
+						{topics.length > 0 && (
+							<div className="flex flex-wrap gap-1.5">
+								{topics.map((topic) => (
+									<Badge
+										key={topic}
+										variant="secondary"
+										className="text-xs font-normal"
+									>
+										{topic}
+									</Badge>
+								))}
+							</div>
+						)}
 					</div>
-					{topics.length > 0 && (
-						<div className="mt-3 flex flex-wrap gap-1.5">
-							{topics.slice(0, 5).map((topic) => (
-								<Badge
-									key={topic}
-									variant="secondary"
-									className="text-xs font-normal"
-								>
-									{topic}
-								</Badge>
-							))}
-						</div>
-					)}
 				</CardContent>
 			</Link>
 		</Card>

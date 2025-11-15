@@ -1,6 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, Outlet } from "@tanstack/react-router";
-import { gql } from "graphql-request";
 import {
 	CheckCircle2,
 	Circle,
@@ -14,43 +13,16 @@ import {
 } from "lucide-react";
 import { createCrumb } from "@/components/Breadcrumbs";
 import { Badge } from "@/components/ui/badge";
-import type {
-	GetPullRequestQuery,
-	GetPullRequestQueryVariables,
-} from "@/generated/graphql";
-import { getGraphQLClient } from "@/lib/graphqlClient";
+import { getPullRequestQueryOptions } from "@/data/GetPullRequest";
 import { cn } from "@/lib/utils";
 
-const getPullRequestQueryOptions = (
-	owner: string,
-	repo: string,
-	prNumber: number,
-) => {
-	const graphQLClient = getGraphQLClient();
-	return {
-		queryKey: ["pullRequest", owner, repo, prNumber],
-		queryFn: async () => {
-			return graphQLClient.request<
-				GetPullRequestQuery,
-				GetPullRequestQueryVariables
-			>(GET_PULL_REQUEST, {
-				owner,
-				name: repo,
-				number: prNumber,
-			});
-		},
-	};
-};
-
-export const Route = createFileRoute("/$owner/$repo/pr/$number")({
+export const Route = createFileRoute("/$owner/$repo/pull/$number")({
 	component: PullRequestLayout,
 	loader: async ({ params, context: { queryClient } }) => {
 		const prNumber = Number.parseInt(params.number, 10);
-
 		const data = await queryClient.fetchQuery(
 			getPullRequestQueryOptions(params.owner, params.repo, prNumber),
 		);
-
 		return {
 			crumbs: [
 				createCrumb({
@@ -61,25 +33,25 @@ export const Route = createFileRoute("/$owner/$repo/pr/$number")({
 				}),
 				createCrumb({
 					label: `#${params.number}`,
-					to: "/$owner/$repo/pr/$number",
+					to: "/$owner/$repo/pull/$number",
 					params,
 					className: "font-mono",
 					buttons: [
 						{
 							label: "Conversation",
-							to: "/$owner/$repo/pr/$number",
+							to: "/$owner/$repo/pull/$number",
 							icon: MessageSquare,
 							badge: data.repository?.pullRequest?.comments.totalCount,
 						},
 						{
 							label: "Commits",
-							to: "/$owner/$repo/pr/$number/commits",
+							to: "/$owner/$repo/pull/$number/commits",
 							icon: GitCommit,
 							badge: data.repository?.pullRequest?.commits.totalCount,
 						},
 						{
 							label: "Files",
-							to: "/$owner/$repo/pr/$number/files",
+							to: "/$owner/$repo/pull/$number/files",
 							icon: FileDiff,
 							badge: data.repository?.pullRequest?.changedFiles,
 						},
@@ -90,43 +62,12 @@ export const Route = createFileRoute("/$owner/$repo/pr/$number")({
 	},
 });
 
-const GET_PULL_REQUEST = gql`
-	query GetPullRequest($owner: String!, $name: String!, $number: Int!) {
-		repository(owner: $owner, name: $name) {
-			pullRequest(number: $number) {
-				number
-				title
-				state
-				isDraft
-				headRefName
-				baseRefName
-				author {
-					login
-					avatarUrl
-				}
-				additions
-				deletions
-				changedFiles
-				comments {
-					totalCount
-				}
-				commits {
-					totalCount
-				}
-			}
-		}
-	}
-`;
-
 function PullRequestLayout() {
 	const { owner, repo, number } = Route.useParams();
 	const prNumber = Number.parseInt(number, 10);
+	const { data } = useQuery(getPullRequestQueryOptions(owner, repo, prNumber));
 
-	const { data: prData } = useQuery(
-		getPullRequestQueryOptions(owner, repo, prNumber),
-	);
-
-	const pr = prData?.repository?.pullRequest;
+	const pr = data?.repository?.pullRequest;
 
 	if (!pr) {
 		return null;

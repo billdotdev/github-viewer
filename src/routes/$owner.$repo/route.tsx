@@ -4,7 +4,7 @@ import { createCrumb } from "@/components/Breadcrumbs";
 
 export const Route = createFileRoute("/$owner/$repo")({
 	component: RepositoryLayout,
-	loader: async ({ params }) => {
+	loader: async ({ params, location }) => {
 		return {
 			crumbs: [
 				createCrumb({
@@ -27,6 +27,7 @@ export const Route = createFileRoute("/$owner/$repo")({
 							label: "Pull Requests",
 							to: "/$owner/$repo/pulls",
 							icon: GitPullRequest,
+							active: location.pathname.includes("/pull"),
 						},
 					],
 				}),

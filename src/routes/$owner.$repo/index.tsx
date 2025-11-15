@@ -1,92 +1,11 @@
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import { gql } from "graphql-request";
 import { GitFork, Lock, Star } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import type {
-	GetRepositoryCodeQuery,
-	GetRepositoryCodeQueryVariables,
-	GetRepositoryQuery,
-	GetRepositoryQueryVariables,
-} from "@/generated/graphql";
-import { getGraphQLClient } from "@/lib/graphqlClient";
+import { getRepositoryQueryOptions } from "@/data/GetRepository";
+import { getRepositoryCodeQueryOptions } from "@/data/GetRepositoryCode";
 import { cn } from "@/lib/utils";
-
-const GET_REPOSITORY = gql`
-	query GetRepository($owner: String!, $name: String!) {
-		repository(owner: $owner, name: $name) {
-			id
-			name
-			stargazerCount
-			forkCount
-			visibility
-			primaryLanguage {
-				name
-				color
-			}
-		}
-	}
-`;
-
-const GET_REPOSITORY_CODE = gql`
-	query GetRepositoryCode($owner: String!, $name: String!) {
-		repository(owner: $owner, name: $name) {
-			defaultBranchRef {
-				target {
-					... on Commit {
-						history(first: 20) {
-							totalCount
-							nodes {
-								oid
-								messageHeadline
-								committedDate
-								author {
-									avatarUrl
-									user {
-										login
-									}
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-	}
-`;
-
-const getRepositoryQueryOptions = (owner: string, repo: string) => {
-	const graphQLClient = getGraphQLClient();
-	return {
-		queryKey: ["repository", owner, repo],
-		queryFn: async () => {
-			return graphQLClient.request<
-				GetRepositoryQuery,
-				GetRepositoryQueryVariables
-			>(GET_REPOSITORY, {
-				owner,
-				name: repo,
-			});
-		},
-	};
-};
-
-const getRepositoryCodeQueryOptions = (owner: string, repo: string) => {
-	const graphQLClient = getGraphQLClient();
-	return {
-		queryKey: ["repositoryCode", owner, repo],
-		queryFn: async () => {
-			return graphQLClient.request<
-				GetRepositoryCodeQuery,
-				GetRepositoryCodeQueryVariables
-			>(GET_REPOSITORY_CODE, {
-				owner,
-				name: repo,
-			});
-		},
-	};
-};
 
 export const Route = createFileRoute("/$owner/$repo/")({
 	component: RepositoryCodeTab,
@@ -95,7 +14,6 @@ export const Route = createFileRoute("/$owner/$repo/")({
 			queryClient.fetchQuery(
 				getRepositoryQueryOptions(params.owner, params.repo),
 			),
-
 			queryClient.fetchQuery(
 				getRepositoryCodeQueryOptions(params.owner, params.repo),
 			),
@@ -105,14 +23,11 @@ export const Route = createFileRoute("/$owner/$repo/")({
 
 function RepositoryCodeTab() {
 	const { owner, repo } = Route.useParams();
-
 	const { data } = useQuery(getRepositoryQueryOptions(owner, repo));
 	const { data: codeData } = useQuery(
 		getRepositoryCodeQueryOptions(owner, repo),
 	);
-
 	const repository = data?.repository;
-
 	if (!repository) {
 		return null;
 	}

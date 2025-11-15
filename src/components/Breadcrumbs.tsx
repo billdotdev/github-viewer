@@ -60,56 +60,60 @@ export function Breadcrumbs() {
 										</BreadcrumbLink>
 									)}
 									{item.buttons && (
-										<div className="flex items-center gap-2 pl-1">
-											{item.buttons.map((button) => {
-												return (
-													<Button
-														key={button.label}
-														variant="outline"
-														className="h-6 group"
-														size="sm"
-														asChild
+										<div className="flex items-center gap-1.5 pl-1">
+											{item.buttons.map((button) => (
+												<Button
+													key={button.label}
+													variant="outline"
+													className="h-6 group"
+													size="sm"
+													asChild
+												>
+													<Link
+														to={button.to}
+														preload="viewport"
+														activeOptions={{
+															exact: true,
+															includeSearch: true,
+														}}
+														search={button.search}
+														activeProps={{
+															className:
+																"bg-secondary text-secondary-foreground",
+														}}
+														className={
+															button.active
+																? "bg-secondary text-secondary-foreground"
+																: undefined
+														}
 													>
-														<Link
-															to={button.to}
-															preload="viewport"
-															activeOptions={{
-																exact: true,
-																includeSearch: true,
-															}}
-															search={button.search}
-															activeProps={{
-																className:
-																	"bg-secondary text-secondary-foreground",
-															}}
-														>
-															{({ isActive }) => (
-																<>
-																	<button.icon
-																		className={cn(
-																			"h-3 w-3 shrink-0",
-																			button.iconClassName,
-																		)}
-																	/>
-																	<span>{button.label}</span>
-
-																	{button.badge && (
-																		<Badge
-																			variant="secondary"
-																			className={cn(
-																				"text-xs px-1 py-0 group-hover:bg-primary/10",
-																				isActive && "bg-primary/10",
-																			)}
-																		>
-																			{button.badge}
-																		</Badge>
+														{({ isActive }) => (
+															<>
+																<button.icon
+																	className={cn(
+																		"h-3 w-3 shrink-0",
+																		button.iconClassName,
 																	)}
-																</>
-															)}
-														</Link>
-													</Button>
-												);
-											})}
+																/>
+																<span>{button.label}</span>
+
+																{button.badge && (
+																	<Badge
+																		variant="secondary"
+																		className={cn(
+																			"text-xs px-1 py-0 group-hover:bg-primary/10",
+																			(isActive || button.active) &&
+																				"bg-primary/10",
+																		)}
+																	>
+																		{button.badge}
+																	</Badge>
+																)}
+															</>
+														)}
+													</Link>
+												</Button>
+											))}
 										</div>
 									)}
 								</BreadcrumbItem>
@@ -137,6 +141,7 @@ interface BreadcrumbItemData {
 		badge?: number;
 		iconClassName?: string;
 		search?: Record<string, string>;
+		active?: boolean;
 	}[];
 }
 

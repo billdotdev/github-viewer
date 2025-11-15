@@ -41,14 +41,9 @@ function App() {
 	return (
 		<div className="flex flex-1 flex-col overflow-auto">
 			<div className="container mx-auto max-w-6xl py-8 px-4">
-				<div className="mb-8">
-					<h1 className="text-3xl font-bold mb-2">Repositories</h1>
-					<p className="text-muted-foreground">
-						Search and pin repositories to keep track of your work
-					</p>
-				</div>
+				<h1 className="text-3xl font-bold mb-4">Repositories</h1>
 
-				<div className="mb-8">
+				<div className="mb-4">
 					<RepositorySearch onRepositoryPinned={handleRepositoryChange} />
 				</div>
 
@@ -72,10 +67,10 @@ function App() {
 				) : (
 					<div>
 						<h2 className="text-xl font-semibold mb-4">Pinned Repositories</h2>
-						<div className="grid gap-4 md:grid-cols-2">
+						<div className="flex flex-col gap-3">
 							{pinnedRepos.map((repo) => (
 								<RepositoryCard
-									key={`${repo.owner}/${repo.name}`}
+									key={repo.url}
 									repository={repo}
 									onUnpin={handleRepositoryChange}
 								/>

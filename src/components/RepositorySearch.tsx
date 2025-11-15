@@ -22,7 +22,7 @@ const SEARCH_REPOSITORIES = gql`
 		search(query: $query, type: REPOSITORY, first: 10) {
 			nodes {
 				... on Repository {
-					id
+					__typename
 					name
 					owner {
 						login
@@ -121,11 +121,7 @@ export function RepositorySearch({
 	return (
 		<div className="relative w-full">
 			<div className="relative">
-				<Search
-					className={cn(
-						"absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground",
-					)}
-				/>
+				<Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
 				<Input
 					type="text"
 					placeholder="Search repositories..."
@@ -138,11 +134,7 @@ export function RepositorySearch({
 			</div>
 
 			{showResults && debouncedQuery.length >= 2 && (
-				<div
-					className={cn(
-						"absolute z-50 mt-2 w-full rounded-md border bg-popover shadow-md",
-					)}
-				>
+				<div className="absolute z-50 mt-2 w-full rounded-md border bg-popover shadow-md">
 					{isLoading ? (
 						<div className="p-4 text-center text-sm text-muted-foreground">
 							Searching...
@@ -163,10 +155,8 @@ export function RepositorySearch({
 
 								return (
 									<li
-										key={repo.id}
-										className={cn(
-											"flex items-start gap-3 border-b p-3 last:border-b-0 hover:bg-accent",
-										)}
+										key={repo.url}
+										className="flex items-start gap-3 border-b p-3 last:border-b-0 hover:bg-accent"
 									>
 										<div className="min-w-0 flex-1">
 											<div className="flex items-center gap-2">
@@ -174,29 +164,17 @@ export function RepositorySearch({
 													{owner}/{name}
 												</span>
 												{repo.visibility === "PRIVATE" && (
-													<span
-														className={cn(
-															"rounded-md border px-1.5 py-0.5 text-xs",
-														)}
-													>
+													<span className="rounded-md border px-1.5 py-0.5 text-xs">
 														Private
 													</span>
 												)}
 											</div>
 											{repo.description && (
-												<p
-													className={cn(
-														"mt-1 text-xs text-muted-foreground line-clamp-2",
-													)}
-												>
+												<p className="mt-1 text-xs text-muted-foreground line-clamp-2">
 													{repo.description}
 												</p>
 											)}
-											<div
-												className={cn(
-													"mt-2 flex items-center gap-3 text-xs text-muted-foreground",
-												)}
-											>
+											<div className="mt-2 flex items-center gap-3 text-xs text-muted-foreground">
 												{repo.primaryLanguage && (
 													<div className="flex items-center gap-1">
 														<span
@@ -216,7 +194,7 @@ export function RepositorySearch({
 											</div>
 										</div>
 										<Button
-											variant={pinned ? "default" : "outline"}
+											variant={pinned ? "outline" : "outline"}
 											size="sm"
 											onClick={() => handlePin(repo)}
 											className="shrink-0"

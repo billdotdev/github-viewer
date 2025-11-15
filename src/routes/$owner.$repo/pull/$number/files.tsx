@@ -1,6 +1,5 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import { gql } from "graphql-request";
 import { FileDiff } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { FileFilter, type FileFilters } from "@/components/FileFilter";
@@ -9,79 +8,23 @@ import { FileTree } from "@/components/FileTree";
 import { ResizableSidebar } from "@/components/ResizableSidebar";
 import { Card, CardContent } from "@/components/ui/card";
 import { ViewedProgress } from "@/components/ViewedProgress";
-import type {
-	GetPullRequestFilesQuery,
-	GetPullRequestFilesQueryVariables,
-	PatchStatus,
-} from "@/generated/graphql";
+import { getPullRequestFilesQueryOptions } from "@/data/GetPullRequestFiles";
+import type { PatchStatus } from "@/generated/graphql";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useFileViewed } from "@/hooks/useFileViewed";
 import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts";
 import { getFileExtension } from "@/lib/diffParser";
-import { getGraphQLClient } from "@/lib/graphqlClient";
 import { cn } from "@/lib/utils";
 
-const getPullRequestFilesQueryOptions = (
-	owner: string,
-	repo: string,
-	prNumber: number,
-) => {
-	const graphQLClient = getGraphQLClient();
-	return {
-		queryKey: ["pullRequestFiles", owner, repo, prNumber],
-		queryFn: async ({ pageParam }: { pageParam?: string }) => {
-			return graphQLClient.request<
-				GetPullRequestFilesQuery,
-				GetPullRequestFilesQueryVariables
-			>(GET_PULL_REQUEST_FILES, {
-				owner,
-				name: repo,
-				number: prNumber,
-				after: pageParam,
-			});
-		},
-		initialPageParam: undefined as string | undefined,
-		getNextPageParam: (lastPage: GetPullRequestFilesQuery) => {
-			const pageInfo = lastPage.repository?.pullRequest?.files?.pageInfo;
-			return pageInfo?.hasNextPage ? pageInfo.endCursor : undefined;
-		},
-	};
-};
-
-export const Route = createFileRoute("/$owner/$repo/pr/$number/files")({
+export const Route = createFileRoute("/$owner/$repo/pull/$number/files")({
 	component: PullRequestFiles,
 	loader: async ({ params, context: { queryClient } }) => {
 		const prNumber = Number.parseInt(params.number, 10);
-
 		await queryClient.fetchInfiniteQuery(
 			getPullRequestFilesQueryOptions(params.owner, params.repo, prNumber),
 		);
 	},
 });
-
-const GET_PULL_REQUEST_FILES = gql`
-	query GetPullRequestFiles($owner: String!, $name: String!, $number: Int!, $after: String) {
-		repository(owner: $owner, name: $name) {
-			pullRequest(number: $number) {
-				id
-				files(first: 100, after: $after) {
-					totalCount
-					pageInfo {
-						hasNextPage
-						endCursor
-					}
-					nodes {
-						path
-						additions
-						deletions
-						changeType
-						viewerViewedState
-					}
-				}
-			}
-		}
-	}
-`;
 
 function PullRequestFiles() {
 	const { owner, repo, number } = Route.useParams();
@@ -100,22 +43,22 @@ function PullRequestFiles() {
 	const scrollContainerRef = useRef<HTMLDivElement>(null);
 
 	const {
-		data: filesData,
-		isLoading: isFilesLoading,
-		error: filesError,
+		data,
+		isLoading,
+		error,
 		fetchNextPage,
 		hasNextPage,
 		isFetchingNextPage,
 	} = useInfiniteQuery(getPullRequestFilesQueryOptions(owner, repo, prNumber));
 
 	const allFiles = useMemo(() => {
-		if (!filesData?.pages) return [];
-		return filesData.pages.flatMap(
+		if (!data?.pages) return [];
+		return data.pages.flatMap(
 			(page) =>
 				page.repository?.pullRequest?.files?.nodes?.filter((f) => f !== null) ||
 				[],
 		);
-	}, [filesData]);
+	}, [data]);
 
 	const filteredFiles = useMemo(() => {
 		return allFiles.filter((file) => {
@@ -174,10 +117,9 @@ function PullRequestFiles() {
 		return counts;
 	}, [allFiles]);
 
-	const pullRequestId =
-		filesData?.pages?.[0]?.repository?.pullRequest?.id || "";
+	const pullRequestId = data?.pages?.[0]?.repository?.pullRequest?.id || "";
 	const totalCount =
-		filesData?.pages?.[0]?.repository?.pullRequest?.files?.totalCount || 0;
+		data?.pages?.[0]?.repository?.pullRequest?.files?.totalCount || 0;
 
 	const {
 		toggleViewed,
@@ -187,15 +129,15 @@ function PullRequestFiles() {
 	} = useFileViewed(owner, repo, prNumber, pullRequestId);
 
 	const viewedCount = useMemo(() => {
-		if (!filesData?.pages) return 0;
-		return filesData.pages.reduce((count, page) => {
+		if (!data?.pages) return 0;
+		return data.pages.reduce((count, page) => {
 			const pageFiles =
 				page.repository?.pullRequest?.files?.nodes?.filter(
 					(f) => f !== null && f.viewerViewedState === "VIEWED",
 				) || [];
 			return count + pageFiles.length;
 		}, 0);
-	}, [filesData]);
+	}, [data]);
 
 	const findNextUnviewedFile = (startIndex: number): number => {
 		for (let i = startIndex + 1; i < filteredFiles.length; i++) {
@@ -308,7 +250,7 @@ function PullRequestFiles() {
 		markAllAsUnviewed(viewedPaths);
 	};
 
-	if (isFilesLoading) {
+	if (isLoading) {
 		return (
 			<Card>
 				<CardContent className="flex min-h-[400px] items-center justify-center">
@@ -325,7 +267,7 @@ function PullRequestFiles() {
 		);
 	}
 
-	if (filesError) {
+	if (error) {
 		return (
 			<Card className="border-destructive">
 				<CardContent className="pt-6">

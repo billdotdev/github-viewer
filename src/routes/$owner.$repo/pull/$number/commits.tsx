@@ -1,92 +1,34 @@
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import { gql } from "graphql-request";
 import { GitCommit } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import type {
-	GetPullRequestCommitsQuery,
-	GetPullRequestCommitsQueryVariables,
-} from "@/generated/graphql";
-import { getGraphQLClient } from "@/lib/graphqlClient";
+import { getPullRequestCommitsQueryOptions } from "@/data/GetPullRequestCommits";
 import { cn } from "@/lib/utils";
 
-const getPullRequestCommitsQueryOptions = (
-	owner: string,
-	repo: string,
-	prNumber: number,
-) => {
-	const graphQLClient = getGraphQLClient();
-	return {
-		queryKey: ["pullRequestCommits", owner, repo, prNumber],
-		queryFn: async () => {
-			return graphQLClient.request<
-				GetPullRequestCommitsQuery,
-				GetPullRequestCommitsQueryVariables
-			>(GET_PULL_REQUEST_COMMITS, {
-				owner,
-				name: repo,
-				number: prNumber,
-			});
-		},
-	};
-};
-
-export const Route = createFileRoute("/$owner/$repo/pr/$number/commits")({
+export const Route = createFileRoute("/$owner/$repo/pull/$number/commits")({
 	component: PullRequestCommits,
 	loader: async ({ params, context: { queryClient } }) => {
 		const prNumber = Number.parseInt(params.number, 10);
-
 		await queryClient.fetchQuery(
 			getPullRequestCommitsQueryOptions(params.owner, params.repo, prNumber),
 		);
 	},
 });
 
-const GET_PULL_REQUEST_COMMITS = gql`
-	query GetPullRequestCommits($owner: String!, $name: String!, $number: Int!) {
-		repository(owner: $owner, name: $name) {
-			pullRequest(number: $number) {
-				commits(first: 100) {
-					nodes {
-						commit {
-							oid
-							messageHeadline
-							committedDate
-							author {
-								user {
-									login
-									avatarUrl
-								}
-							}
-							additions
-							deletions
-						}
-					}
-				}
-			}
-		}
-	}
-`;
-
 function PullRequestCommits() {
 	const { owner, repo, number } = Route.useParams();
 	const prNumber = Number.parseInt(number, 10);
-
-	const {
-		data: commitsData,
-		isLoading: isCommitsLoading,
-		error: commitsError,
-	} = useQuery(getPullRequestCommitsQueryOptions(owner, repo, prNumber));
-
+	const { data, isLoading, error } = useQuery(
+		getPullRequestCommitsQueryOptions(owner, repo, prNumber),
+	);
 	const commits =
-		commitsData?.repository?.pullRequest?.commits.nodes?.filter(
-			(c) => c !== null,
-		) || [];
+		data?.repository?.pullRequest?.commits.nodes?.filter((c) => c !== null) ||
+		[];
 
 	return (
 		<div className="space-y-3 mx-auto w-full max-w-5xl pt-3">
-			{isCommitsLoading ? (
+			{isLoading ? (
 				<Card>
 					<CardContent className="flex min-h-[200px] items-center justify-center">
 						<div className="text-center">
@@ -101,7 +43,7 @@ function PullRequestCommits() {
 						</div>
 					</CardContent>
 				</Card>
-			) : commitsError ? (
+			) : error ? (
 				<Card className="border-destructive">
 					<CardContent className="pt-6">
 						<p className="text-sm text-destructive">Failed to load commits</p>
