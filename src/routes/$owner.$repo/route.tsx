@@ -1,5 +1,5 @@
 import { createFileRoute, Outlet } from "@tanstack/react-router";
-import { CircleDot, Code, GitPullRequest } from "lucide-react";
+import { CircleDot, CirclePlay, Code, GitPullRequest } from "lucide-react";
 import { createCrumb } from "@/components/Breadcrumbs";
 
 export const Route = createFileRoute("/$owner/$repo")({
@@ -28,6 +28,12 @@ export const Route = createFileRoute("/$owner/$repo")({
 							to: "/$owner/$repo/pulls",
 							icon: GitPullRequest,
 							active: location.pathname.includes("/pull"),
+						},
+						{
+							label: "Actions",
+							to: "/$owner/$repo/actions",
+							icon: CirclePlay,
+							active: location.pathname.includes("/actions"),
 						},
 					],
 				}),

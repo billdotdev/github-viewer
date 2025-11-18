@@ -81,7 +81,7 @@ function SidebarProvider({
 				_setOpen(openState);
 			}
 
-			// biome-ignore lint/suspicious/noDocumentCookie: This sets the cookie to keep the sidebar state.
+			// This sets the cookie to keep the sidebar state.
 			document.cookie = `${SIDEBAR_COOKIE_NAME}=${openState}; path=/; max-age=${SIDEBAR_COOKIE_MAX_AGE}`;
 		},
 		[setOpenProp, open],
@@ -90,7 +90,7 @@ function SidebarProvider({
 	// Helper to toggle the sidebar.
 	const toggleSidebar = React.useCallback(() => {
 		return isMobile ? setOpenMobile((open) => !open) : setOpen((open) => !open);
-	}, [isMobile, setOpen]);
+	}, [isMobile, setOpen, setOpenMobile]);
 
 	// Adds a keyboard shortcut to toggle the sidebar.
 	React.useEffect(() => {
@@ -122,7 +122,7 @@ function SidebarProvider({
 			setOpenMobile,
 			toggleSidebar,
 		}),
-		[state, open, setOpen, isMobile, openMobile, toggleSidebar],
+		[state, open, setOpen, isMobile, openMobile, setOpenMobile, toggleSidebar],
 	);
 
 	return (
@@ -186,9 +186,7 @@ function Sidebar({
 					data-sidebar="sidebar"
 					data-slot="sidebar"
 					data-mobile="true"
-					className={cn(
-						"bg-sidebar text-sidebar-foreground w-(--sidebar-width) p-0 [&>button]:hidden",
-					)}
+					className="bg-sidebar text-sidebar-foreground w-(--sidebar-width) p-0 [&>button]:hidden"
 					style={
 						{
 							"--sidebar-width": SIDEBAR_WIDTH_MOBILE,
@@ -245,9 +243,7 @@ function Sidebar({
 				<div
 					data-sidebar="sidebar"
 					data-slot="sidebar-inner"
-					className={cn(
-						"bg-sidebar group-data-[variant=floating]:border-sidebar-border flex h-full w-full flex-col group-data-[variant=floating]:rounded-lg group-data-[variant=floating]:border group-data-[variant=floating]:shadow-sm",
-					)}
+					className="bg-sidebar group-data-[variant=floating]:border-sidebar-border flex h-full w-full flex-col group-data-[variant=floating]:rounded-lg group-data-[variant=floating]:border group-data-[variant=floating]:shadow-sm"
 				>
 					{children}
 				</div>
