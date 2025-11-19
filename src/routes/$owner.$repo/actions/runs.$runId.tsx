@@ -6,11 +6,18 @@ import {
 	CircleCheck,
 	CircleSlash,
 	CircleX,
+	Copy,
 	LoaderCircle,
 } from "lucide-react";
 import { useState } from "react";
+import ReactMarkdown from "react-markdown";
+import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
+import { oneLight } from "react-syntax-highlighter/dist/esm/styles/prism";
+import { toast } from "sonner";
 import { createCrumb } from "@/components/Breadcrumbs";
+import { Button } from "@/components/ui/button";
 import { getWorkflowRunQueryOptions } from "@/data/GetWorkflowRun";
+import { getWorkflowRunJobSummaryQueryOptions } from "@/data/GetWorkflowRunJobSummary";
 import { getWorkflowRunJobsQueryOptions } from "@/data/GetWorkflowRunJobs";
 import { cn } from "@/lib/utils";
 
@@ -61,7 +68,6 @@ function RouteComponent() {
 			// Remove trailing " - " from the base name
 			baseName = baseName.replace(/\s*-\s*$/, "");
 			const matrixIndex = match ? match[2] : null;
-			console.log(match, baseName, matrixIndex);
 
 			if (!acc[baseName]) {
 				acc[baseName] = [];
@@ -139,7 +145,14 @@ function RouteComponent() {
 	return (
 		<div className="h-[calc(100vh-2.5rem)] overflow-y-auto flex-1">
 			<div className="max-w-6xl mx-auto w-full px-4 pt-4">
-				<div className="text-xl font-semibold">{run.display_title}</div>
+				<a
+					href={run.html_url}
+					target="_blank"
+					rel="noopener noreferrer"
+					className="text-xl font-semibold hover:underline"
+				>
+					{run.display_title}
+				</a>
 				<div className="text-muted-foreground">
 					<span className="font-medium">{run.name}</span> #{run.run_number}:{" "}
 					{run.event}
@@ -153,7 +166,6 @@ function RouteComponent() {
 					const groupStatus = getGroupStatus(jobs);
 
 					if (!isGroup) {
-						// Single job, render normally
 						const job = jobs[0];
 						const statusColor = getStatusColor(job.conclusion || job.status);
 						const statusIcon = getStatusIcon(job.status, job.conclusion);
@@ -215,7 +227,6 @@ function RouteComponent() {
 						);
 					}
 
-					// Matrix job group
 					const statusColor = getStatusColor(groupStatus);
 					const statusIcon = getStatusIcon(groupStatus, null);
 
@@ -344,7 +355,82 @@ function RouteComponent() {
 						</div>
 					);
 				})}
+
+				<div className="pt-4">
+					{jobsData.data.jobs.map((job) => {
+						if (job.status !== "completed" || job.conclusion === "skipped") {
+							return null;
+						}
+						return (
+							<WorkflowRunJobSummary
+								key={job.id}
+								jobId={job.id}
+								jobName={job.name}
+							/>
+						);
+					})}
+				</div>
 			</div>
+		</div>
+	);
+}
+
+function WorkflowRunJobSummary({
+	jobId,
+	jobName,
+}: {
+	jobId: number;
+	jobName: string;
+}) {
+	const { owner, repo } = Route.useParams();
+	const { data: summary } = useQuery(
+		getWorkflowRunJobSummaryQueryOptions(owner, repo, jobId),
+	);
+
+	if (!summary) return null;
+
+	return (
+		<div className="p-2">
+			<div className="font-semibold mb-2">{jobName} summary</div>
+			<ReactMarkdown
+				components={{
+					code({ children }) {
+						const text = String(children).replace(/\n$/, "");
+
+						return (
+							<div className="relative group">
+								<SyntaxHighlighter
+									customStyle={{
+										backgroundColor: "var(--accent)",
+									}}
+									codeTagProps={{
+										style: {
+											fontSize: "0.875rem",
+											backgroundColor: "var(--accent)",
+										},
+									}}
+									style={oneLight}
+								>
+									{text}
+								</SyntaxHighlighter>
+								<Button
+									variant="outline"
+									size="icon"
+									className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity"
+									onClick={() => {
+										navigator.clipboard.writeText(text);
+										toast.success("Copied to clipboard");
+									}}
+								>
+									<Copy className="h-4 w-4" />
+								</Button>
+							</div>
+						);
+					},
+				}}
+			>
+				{summary}
+			</ReactMarkdown>
 		</div>
 	);
 }
